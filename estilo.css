@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
 
 :root {
   --color-bg: #e5ecf3;
@@ -132,7 +132,7 @@ header>div:first-child {
 
 /* Main */
 main {
-  padding: 3rem 2rem;
+  /* padding: 3rem 2rem; */
   animation: fadeIn var(--transition);
 }
 
@@ -218,15 +218,17 @@ main {
   transform: scale(1.05);
 }
 
+.section {
+  padding: 4rem 2rem;
+}
 
 /* Sección Especialidades */
 .especialidades {
-  padding: 1rem 0 3rem 0;
   text-align: center;
 }
 
 .especialidades h2 {
-  font-size: 2.5rem;
+  font-size: 3rem;
   margin-bottom: 2rem;
   font-weight: 500;
   word-spacing: 0;
@@ -260,6 +262,142 @@ main {
 .especialidad-card h3 {
   font-size: 1.2rem;
   color: var(--color-primary);
+}
+
+.destacados {
+  background-color: #f8f9fa;
+  /* Gris claro distinto pero acorde */
+  padding: 60px 0;
+}
+
+.destacados-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+.destacados-text {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.destacados-text h3 {
+  color: var(--color-accent);
+  font-size: 2.5rem;
+  font-style: normal;
+  text-decoration: none;
+  line-height: 1.1em;
+  letter-spacing: -2px;
+  word-spacing: 0em;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.destacados-text p {
+  margin-bottom: 30px;
+}
+
+.beneficios-list {
+  list-style: none;
+  padding: 0;
+}
+
+.beneficios-list li {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  /* Azul claro como en la imagen */
+  display: flex;
+  align-items: center;
+  background-color: var(--color-bg);
+  /* Azul claro como en la imagen */
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: var(--shadow);
+}
+
+.beneficios-list i {
+  font-size: 2rem;
+  color: var(--color-accent-dark);
+  margin-right: 15px;
+  background-color: #d1ecf1;
+  height: 60px;
+  width: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}
+
+.beneficios-list strong {
+  font-size: 1.2rem;
+  display: block;
+}
+
+.beneficios-list p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.destacados-image {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 500px;
+}
+
+.destacados-image img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 20px;
+  height: 100%;
+  box-shadow: var(--shadow);
+}
+
+
+
+
+/* Obras Sociales Section */
+.obras-sociales {
+  text-align: center;
+  background-color: #f0f8ff;
+
+}
+
+.obras-sociales h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 60px;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+}
+
+.obras-sociales p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: var(--color-muted);
+}
+
+.logos-grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.logo-os {
+  max-width: 150px;
+  height: auto;
+  filter: grayscale(100%);
+  transition: filter var(--transition);
+}
+
+.logo-os:hover {
+  filter: grayscale(0%);
 }
 
 
