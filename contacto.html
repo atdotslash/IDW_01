@@ -33,18 +33,37 @@
         </div>
     </header>
     <main>
-        <p>Formulario de contacto</p>
-        <form>
-            <input type="text" placeholder="Asunto">
-            <input type="email" placeholder="Correo Electrónico">
-            <input type="textarea" placeholder="Escriba su mensaje">
-            <input type="submit" value="Enviar">
-        </form>
+        <div class="container contact-container">
+            <section class="contact-form">
+                <h2>Déjanos Un Mensaje</h2>
+                <form>
+                    <input type="text" placeholder="Su Nombre" required>
+                    <input type="email" placeholder="Correo Electrónico" required>
+                    <input type="text" placeholder="Asunto">
+                    <textarea rows="10" placeholder="Escriba su mensaje" required></textarea>
+                    <button type="submit">Enviar</button>
+                </form>
+            </section>
+            <section class="contact-info">
+                <h2>Nuestra Ubicación</h2>
+                <p><i class="fas fa-map-marker-alt"></i> Calle Desarrollando, Concordia, Entre Ríos</p>
+                <p>
+                    <i class="fas fa-phone"></i>
+                    <a href="tel:+5494567890">(54)456-7890</a>
+                </p>
+                <p><i class="fa-brands fa-whatsapp"></i>
+                    <a href="https://wa.me/541111223344">1111223344</a>
+                </p>
+                <p><i class="fas fa-envelope"></i>
+                    <a href="mailto:contacto@clinica-idw.com">contacto@clinica-idw.com</a>
+                </p>
+                <p class="horario"><i class="fa fa-clock"></i>
+                    Horarios de atención</p>
+                <time datetime="08:00-20:00">8:00 am a 8:00 pm</time>
+            </section>
+        </div>
 
 
-        <pre>Información de contacto: Teléfono: (123) 456-7890</pre>
-        <p>WhatsApp <a href="https://wa.me/541111223344">1111223344</a></p>
-        <p>Dirección: Calle Desarrollando, Concordia, Entre Ríos</p>
     </main>
     <footer class="footer">
         <div class="container">
