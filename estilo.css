@@ -181,6 +181,9 @@ main {
   justify-content: center;
 }
 
+
+
+
 .btn-primary {
   background: var(--color-accent);
   color: white;
@@ -213,6 +216,50 @@ main {
   background: white;
   color: var(--color-accent);
   transform: scale(1.05);
+}
+
+
+/* Sección Especialidades */
+.especialidades {
+  padding: 1rem 0 3rem 0;
+  text-align: center;
+}
+
+.especialidades h2 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  font-weight: 500;
+  word-spacing: 0;
+  letter-spacing: -2px;
+  color: var(--color-primary);
+}
+
+.especialidades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+}
+
+.especialidad-card {
+  background: var(--color-surface);
+  padding: 2rem;
+  border-radius: 0.7rem;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition);
+}
+
+.especialidad-card:hover {
+  transform: translateY(-5px);
+}
+
+.especialidad-card i {
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+}
+
+.especialidad-card h3 {
+  font-size: 1.2rem;
+  color: var(--color-primary);
 }
 
 
