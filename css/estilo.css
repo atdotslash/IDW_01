@@ -1,27 +1,40 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
 
 :root {
+  /* --- Sobrescribiendo las variables de color de Bootstrap 5 --- */
+  /* Mapeamos tus colores a las variables de Bootstrap. */
+  /* Puedes encontrar la lista completa en la documentación de Bootstrap. */
+  --bs-primary: var(--color-accent);
+  --bs-primary-rgb: 0, 119, 182; /* RGB de --color-accent (#0077b6) */
+  --bs-secondary: var(--color-secondary);
+  --bs-secondary-rgb: 240, 248, 255; /* RGB de --color-muted (#f0f8ff) */
+  --bs-body-color: var(--color-primary);
+  --bs-body-bg: var(--color-bg);
+  --bs-border-color: var(--color-border);
+
+  /* --- Tus variables de color personalizadas --- */
   --color-bg: #e5ecf3;
   --color-surface: #ffffff;
   --color-primary: #1f2d3d;
   --color-accent: #0077b6;
   --color-accent-dark: #005f8e;
   --color-muted: #6c757d;
+  --color-secondary: #f0f8ff;
   --color-border: #d0d7de;
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --transition: 0.3s ease;
 }
-
+/*
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
+} */
 
 body {
   font-family: "Inter", sans-serif;
   background: radial-gradient(circle at top left, #dbe5f0, #e5ecf3);
-  color: var(--color-primary);
+  /* color: var(--color-primary); */
   min-height: 100vh;
   line-height: 1.6;
   transition: background var(--transition), color var(--transition);
@@ -47,12 +60,12 @@ header > div:first-child {
   flex-wrap: wrap;
 }
 
-.container {
+/* .container {
   width: 100%;
   max-width: 80rem;
   margin-inline: auto;
   padding-inline: 1.5rem;
-}
+} */
 
 /* Logo */
 .logo-title {
@@ -198,6 +211,8 @@ main {
 
 .btn-secondary {
   background: transparent;
+  --bs-btn-color: white;
+  --bs-btn-bg:transparent;
   border: 2px solid white;
   color: white;
   padding: 1rem 2rem;
@@ -214,14 +229,9 @@ main {
   transform: scale(1.05);
 }
 
-.section {
-  padding: 4rem 2rem;
-}
 
 /* Sección Especialidades */
-.especialidades {
-  text-align: center;
-}
+
 
 .especialidades h2 {
   font-size: 3rem;
@@ -232,17 +242,17 @@ main {
   color: var(--color-primary);
 }
 
-.especialidades-grid {
+/* .especialidades-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 2rem;
-}
+} */
 
 .especialidad-card {
-  background: var(--color-surface);
-  padding: 2rem;
-  border-radius: 0.7rem;
-  box-shadow: var(--shadow);
+   background: var(--color-surface);
+  /* padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);  */
   transition: transform var(--transition);
 }
 
@@ -252,7 +262,6 @@ main {
 
 .especialidad-card i {
   color: var(--color-accent);
-  margin-bottom: 1rem;
 }
 
 .especialidad-card h3 {
@@ -260,10 +269,6 @@ main {
   color: var(--color-primary);
 }
 
-.destacados {
-  background-color: #f8f9fa;
-  padding: 60px 0;
-}
 
 .destacados-content {
   display: grid;
@@ -333,7 +338,7 @@ main {
   color: #6c757d;
 }
 
-.destacados-image {
+/* .destacados-image {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
@@ -347,19 +352,15 @@ main {
   border-radius: 20px;
   height: 100%;
   box-shadow: var(--shadow);
-}
+} */
 
 
 
 
 /* Obras Sociales Section */
-.obras-sociales {
-  text-align: center;
-  background-color: #f0f8ff;
 
-}
 
-.obras-sociales h2 {
+#obras-sociales h2 {
   font-size: 2.25rem;
   font-weight: 700;
   line-height: 60px;
@@ -367,7 +368,7 @@ main {
   color: var(--color-primary);
 }
 
-.obras-sociales p {
+#obras-sociales p {
   font-size: 1.2rem;
   margin-bottom: 2rem;
   color: var(--color-muted);
@@ -384,16 +385,17 @@ main {
   max-width: 150px;
   height: auto;
   filter: grayscale(100%);
-  transition: filter var(--transition);
+  transition: filter var(--transition), transform var(--transition);
 }
 
 .logo-os:hover {
   filter: grayscale(0%);
+  transform: scale(1.05);
 }
 
 
 /* Cards */
-.card {
+.my-card {
   background-color: var(--color-surface);
   border-radius: 10px;
   box-shadow: var(--shadow);
@@ -403,7 +405,7 @@ main {
   transition: transform var(--transition), box-shadow var(--transition);
 }
 
-.card:hover {
+.my-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
@@ -445,14 +447,12 @@ button:hover {
   color: var(--color-primary);
 }
 
-.footer a {
-  color: inherit;
-  gap: 0.5rem;
-  text-decoration: none;
+footer a {
   transition: color var(--transition);
+  color: var(--color-muted);
 }
 
-.footer a:hover {
+footer a:hover {
   color: var(--color-accent);
 }
 
@@ -463,17 +463,6 @@ button:hover {
   margin-block: 0.75rem;
 }
 
-.footer-nav ul {
-  list-style-type: none;
-  padding: 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-
-.footer-nav li {
-  margin-bottom: 0.5rem;
-}
 
 .copyright {
   width: 100%;

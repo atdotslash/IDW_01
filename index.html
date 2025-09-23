@@ -8,6 +8,9 @@
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
   integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
   crossorigin="anonymous" referrerpolicy="no-referrer" />
+ <!-- 1. Agrega el CSS de Bootstrap ANTES de tu hoja de estilos -->
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
  <link rel="stylesheet" href="css/estilo.css" />
 </head>
 
@@ -37,81 +40,121 @@
    <h1>Reserva tu turno de forma rápida y sencilla</h1>
    <p>Encuentra al especialista ideal, según tu obra social y horario disponible.</p>
    <div class="hero-buttons">
-    <a href="reserva.html" class="btn-primary">Reservar Turno</a>
-    <a href="catalogo.html" class="btn-secondary">Ver Médicos Disponibles</a>
+    <a href="reserva.html" class="btn btn-primary">Reservar Turno</a>
+    <a href="catalogo.html" class="btn btn-secondary">Ver Médicos Disponibles</a>
    </div>
   </div>
  </section>
  <main>
-  <section class="especialidades container section">
-   <h2>Nuestras Especialidades</h2>
-   <div class="especialidades-grid">
-    <div class="especialidad-card">
-     <i class="fas fa-stethoscope fa-3x"></i>
-     <h3>Clínica Médica</h3>
-    </div>
-    <div class="especialidad-card">
-     <i class="fas fa-baby fa-3x"></i>
-     <h3>Pediatría</h3>
-    </div>
-    <div class="especialidad-card">
-     <i class="fas fa-tooth fa-3x"></i>
-     <h3>Odontología</h3>
-    </div>
-    <div class="especialidad-card">
-     <i class="fas fa-user-md fa-3x"></i>
-     <h3>Geriatría</h3>
-    </div>
-    <div class="especialidad-card">
-     <i class="fas fa-brain fa-3x"></i>
-     <h3>Neurocirugía</h3>
-    </div>
-    <div class="especialidad-card">
-     <i class="fas fa-head-side-virus fa-3x"></i>
-     <h3>Psicología</h3>
-    </div>
-    <div class="especialidad-card">
-     <i class="fas fa-bone fa-3x"></i>
-     <h3>Reumatología</h3>
-    </div>
-    <div class="especialidad-card">
-     <i class="fas fa-baby fa-3x"></i>
-     <h3>Neonatología</h3>
-    </div>
-   </div>
-  </section>
-  </section>
-  <section class="destacados section">
-   <div class="container">
-    <div class="destacados-content">
-     <div class="destacados-image">
-      <img src="https://images.pexels.com/photos/7088526/pexels-photo-7088526.jpeg" alt="Médico atendiendo" />
-      <img src="https://images.pexels.com/photos/4226138/pexels-photo-4226138.jpeg" alt="">
-      <img src="https://images.pexels.com/photos/8413178/pexels-photo-8413178.jpeg" alt="">
-      <img src="https://images.pexels.com/photos/3985163/pexels-photo-3985163.jpeg" alt="">
-     </div>
-
-     <div class="destacados-text">
-      <h3>Comprometidos con tu salud y bienestar</h3>
-      <p>Nuestra prioridad es brindarte una atención médica integral y personalizada. Contamos con un equipo de
-       profesionales altamente calificados y la tecnología más avanzada para ofrecerte los mejores servicios de
-       salud.</p>
-      <ul class="beneficios-list">
-       <li>
-        <i class="fas fa-user-check"></i>
-        <div>
-         <strong>Profesionales certificados</strong>
-         <p>Todos con matrícula vigente</p>
+  <section class="container py-5">
+   <h2 class="display-6 text-center mb-4 text-primary-emphasis fw-bold">Nuestras Especialidades</h2>
+  <div class="row text-center g-4 justify-content-center">
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card  h-100">
+        <div class="card-body">
+          <i class="fas fa-stethoscope fa-3x mb-3"></i>
+          <h3 class="card-title">Clínica Médica</h3>
         </div>
-       </li>
-       <li>
-        <i class="fas fa-handshake"></i>
-        <div>
-         <strong>Obras sociales aceptadas</strong>
-         <p>Amplia cobertura</p>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card h-100">
+        <div class="card-body">
+          <i class="fas fa-baby fa-3x mb-3"></i>
+          <h3 class="card-title">Pediatría</h3>
         </div>
-       </li>
-       <li>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card h-100">
+        <div class="card-body">
+          <i class="fas fa-tooth fa-3x mb-3"></i>
+          <h3 class="card-title">Odontología</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card h-100">
+        <div class="card-body">
+          <i class="fas fa-user-md fa-3x mb-3"></i>
+          <h3 class="card-title">Geriatría</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card h-100">
+        <div class="card-body">
+          <i class="fas fa-brain fa-3x mb-3"></i>
+          <h3 class="card-title">Neurocirugía</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card h-100">
+        <div class="card-body">
+          <i class="fas fa-head-side-virus fa-3x mb-3"></i>
+          <h3 class="card-title">Psicología</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card h-100">
+        <div class="card-body">
+          <i class="fas fa-bone fa-3x mb-3"></i>
+          <h3 class="card-title">Reumatología</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4 col-lg-3">
+      <div class="especialidad-card card h-100">
+        <div class="card-body">
+          <i class="fas fa-baby fa-3x mb-3"></i>
+          <h3 class="card-title">Neonatología</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+  <section class="bg-light py-5">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <div class="row g-3">
+            <div class="col-6 mt-lg-0">
+              <img class="img-fluid rounded shadow-sm" src="https://images.pexels.com/photos/7088526/pexels-photo-7088526.jpeg" alt="Médico sonriendo a paciente">
+            </div>
+            <div class="col-6 mt-lg-0">
+              <img class="img-fluid rounded shadow-sm" src="https://images.pexels.com/photos/4226138/pexels-photo-4226138.jpeg" alt="Equipamiento médico moderno">
+            </div>
+            <div class="col-6">
+              <img class="img-fluid rounded shadow-sm" src="https://images.pexels.com/photos/8413178/pexels-photo-8413178.jpeg" alt="Investigadora en laboratorio">
+            </div>
+            <div class="col-6">
+              <img class="img-fluid object-fit-fill h-100 rounded shadow-sm" src="https://images.pexels.com/photos/3985163/pexels-photo-3985163.jpeg" alt="Sala de espera de la clínica">
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <h3 class="display-6 text-primary text-center text-lg-start fw-bold mb-3">Comprometidos con tu salud y bienestar</h3>
+          <p class="lead text-muted text-center text-lg-start">Nuestra prioridad es brindarte una atención médica integral y personalizada. Contamos con un equipo de
+            profesionales altamente calificados y la tecnología más avanzada para ofrecerte los mejores servicios de
+            salud.</p>
+          <ul class="beneficios-list mt-4">
+            <li>
+              <i class="fas fa-user-check"></i>
+              <div>
+                <strong>Profesionales certificados</strong>
+                <p>Todos con matrícula vigente</p>
+              </div>
+            </li>
+            <li>
+              <i class="fas fa-handshake"></i>
+              <div>
+                <strong>Obras sociales aceptadas</strong>
+                <p>Amplia cobertura</p>
+              </div>
+            </li>
+            <li>
         <i class="fas fa-bolt"></i>
         <div>
          <strong>Atención ágil</strong>
@@ -125,87 +168,85 @@
          <p>Disponible siempre</p>
         </div>
        </li>
-      </ul>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="obras-sociales" class="bg-secondary text-center py-5">
+    <div class="container">
+      <h2 class="display-6 fw-bold">Obras Sociales Aceptadas</h2>
+      <p class="lead text-muted mb-5">Trabajamos con una amplia variedad de obras sociales para tu comodidad.</p>
+      <div class="row row-cols-2 row-cols-md-4 g-4 justify-content-center align-items-center">
+        <div class="col">
+          <a href="https://www.pami.org.ar/" target="_blank" rel="noopener noreferrer">
+            <img src="assets/pami.png" alt="Logo PAMI" class="logo-os img-fluid">
+          </a>
+        </div>
+        <div class="col">
+          <a href="https://www.ioma.gba.gob.ar/" target="_blank" rel="noopener noreferrer">
+            <img src="assets/ioma.avif" alt="Logo IOMA" class="logo-os img-fluid">
+          </a>
+        </div>
+        <div class="col">
+          <a href="https://www.swissmedical.com.ar/" target="_blank" rel="noopener noreferrer">
+            <img src="assets/swiss-medical.png" alt="Logo Swiss Medical" class="logo-os img-fluid">
+          </a>
+        </div>
+        <div class="col">
+          <a href="https://www.osde.com.ar/" target="_blank" rel="noopener noreferrer">
+            <img src="assets/osde.png" alt="Logo OSDE" class="logo-os img-fluid">
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+ </main>
+ <footer class="bg-light text-center text-lg-start text-muted pt-5 ">
+  <div class="container">
+   <div class="row">
+    <div class="col-lg-5 col-md-12 mb-4 mb-lg-0">
+     <h5 class="text-uppercase fw-bold text-primary mb-4">Contacto</h5>
+     <p><i class="fas text-primary fa-map-marker-alt me-3"></i>Calle Desarrollando, Concordia, Entre Ríos</p>
+     <p><i class="fas text-primary fa-phone me-3"></i><a href="tel:+5491155555555"
+       class="text-reset text-decoration-none">+54 5491155555555</a></p>
+     <p><i class="fa-brands text-primary fa-whatsapp me-3"></i><a href="https://wa.me/541111223344" target="_blank"
+       rel="noopener noreferrer" class="text-reset text-decoration-none">1111223344</a></p>
+     <p><i class="far text-primary fa-envelope me-3"></i><a href="mailto:contacto@clinica-idw.com"
+       class="text-reset text-decoration-none">contacto@clinica-idw.com</a></p>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+     <h5 class="text-uppercase fw-bold text-primary mb-4">Navegación</h5>
+     <ul class="list-unstyled mb-0">
+      <li class="mb-2"><a href="index.html" class=" text-decoration-none">Inicio</a></li>
+      <li class="mb-2"><a href="institucional.html" class=" text-decoration-none">Institucional</a></li>
+      <li class="mb-2"><a href="contacto.html" class=" text-decoration-none">Contacto</a></li>
+      <li class="mb-2"><a href="catalogo.html" class=" text-decoration-none">Catálogo</a></li>
+      <li class="mb-2"><a href="reserva.html" class=" text-decoration-none">Reservar Turno</a></li>
+     </ul>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+     <h5 class="text-uppercase fw-bold text-primary mb-4">Nuestras redes sociales</h5>
+     <div class="d-flex justify-content-center justify-content-lg-start">
+      <a class="social-icon me-2" href="https://www.facebook.com/idw" target="_blank" rel="noopener noreferrer">
+       <i class="fab fa-facebook-f"></i>
+      </a>
+      <a class="social-icon" href="https://www.instagram.com/idw/" target="_blank" rel="noopener noreferrer">
+       <i class="fab fa-instagram"></i>
+      </a>
      </div>
     </div>
    </div>
-  </section>
- </main>
- <section class="obras-sociales section ">
-  <div class="container">
-   <h2>Obras Sociales Aceptadas</h2>
-   <p>Obras sociales con las que trabajamos</p>
-   <div class="logos-grid">
-    <a href="https://www.pami.org.ar/" target="_blank">
-     <img src="assets/pami.png" alt="PAMI" class="logo-os">
-    </a>
-    <a href="https://www.ioma.gba.gob.ar/" target="_blank">
-     <img src="assets/ioma.avif" alt="IOMA" class="logo-os">
-    </a>
-    <a href="https://www.swissmedical.com.ar/" target="_blank">
-     <img src="assets/swiss-medical.png" alt="Swiss Medical" class="logo-os">
-    </a>
-    <a href="https://www.osde.com.ar/" target="_blank">
-     <img src="assets/osde.png" alt="OSDE" class="logo-os">
-    </a>
-   </div>
   </div>
- </section>
- </main>
- <footer class="footer">
-  <div class="container">
-   <div class="footer-info">
-    <div>
-     <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-     <span>Calle Desarrollando, Concordia, Entre Ríos</span>
-    </div>
-    <div>
-     <i aria-hidden="true" class="fas fa-phone"></i>
-     <a href="tel:+5491155555555">
-      +54 5491155555555
-     </a>
-    </div>
-    <div>
-     <i aria-hidden="true" class="fa-brands fa-whatsapp"></i>
-     <a href="https://wa.me/541111223344" target="_blank">1111223344</a>
-    </div>
-    <div>
-     <i aria-hidden="true" class="far fa-envelope"></i>
-     <a href="mailto:contacto@clinica-idw.com">
-      contacto@clinica-idw.com
-     </a>
-    </div>
-   </div>
-   <div class="footer-section">
-    <nav class="footer-nav">
-     <ul>
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="institucional.html">Institucional</a></li>
-      <li><a href="contacto.html">Contacto</a></li>
-      <li><a href="catalogo.html">Catálogo</a></li>
-      <li><a href="reserva.html">Reservar Turno</a></li>
-     </ul>
-    </nav>
-   </div>
-   <div class="footer-section redes">
-    <h3>Nuestras redes sociales</h3>
-    <ul>
-     <li>
-      <a class="social-icon" href="https://www.facebook.com/idw" target="_blank">
-       <i class="fab fa-facebook-f"></i>
-      </a>
-     </li>
-     <li>
-      <a class="social-icon" href="https://www.instagram.com/idw/" target="_blank">
-       <i class="fab fa-instagram"></i>
-      </a>
-     </li>
-    </ul>
-   </div>
+  <div class="text-center p-4 mt-3 border-top">
+   &copy; 2025 - Todos los derechos reservados
   </div>
-
-  <p class="copyright">&copy; 2025 - Todos los derechos reservados</p>
  </footer>
+
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
 </html>
