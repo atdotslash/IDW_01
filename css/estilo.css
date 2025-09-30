@@ -23,9 +23,8 @@
   --color-border: #d0d7de;
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --transition: 0.3s ease;
-  --bs-body-font-family: 'Inter', sans-serif;
+  --bs-body-font-family: "Inter", sans-serif;
 }
-
 
 body {
   background: radial-gradient(circle at top left, #dbe5f0, #e5ecf3);
@@ -35,7 +34,6 @@ body {
 }
 
 /* Logo */
-
 
 .logo-img {
   width: 60px;
@@ -118,9 +116,7 @@ main {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg,
-      rgba(0, 0, 0, 0.7) 0%,
-      rgba(0, 0, 0, 0.1) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.1) 100%);
 }
 
 .btn-primary-custom {
@@ -133,11 +129,12 @@ main {
 .btn-primary-custom:hover {
   background: var(--color-accent-dark);
   transform: scale(1.05);
+  color: #ffffff;
 }
 
 .btn-secondary-custom {
   background: transparent;
-  border-color:  white;
+  border-color: white;
   color: white;
   transition: background 0.3s, color 0.3s, transform 0.3s;
 }
@@ -252,7 +249,6 @@ main {
   color: #6c757d;
 }
 
-
 /* Obras Sociales Section */
 
 #obras-sociales h2 {
@@ -312,7 +308,7 @@ main {
   font-weight: 500;
 }
 
-.footer>div:first-child {
+.footer > div:first-child {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -333,7 +329,7 @@ footer a:hover {
   color: var(--color-accent);
 }
 
-.footer-info>div {
+.footer-info > div {
   display: flex;
   align-items: center;
   gap: 0.3rem;
@@ -412,9 +408,7 @@ footer a:hover {
 
 .contact-form,
 .contact-info {
-  flex: 1;
   background: var(--color-surface);
-  padding: 2rem;
   border-radius: 0.5rem;
   box-shadow: var(--shadow);
 }
@@ -429,14 +423,10 @@ footer a:hover {
   background-color: #f5f5f5;
 }
 
-.contact-form button {
-  background: var(--color-accent);
-  color: white;
-  transition: background-color var(--transition) ease-in-out;
-}
-
-.contact-form button:hover {
-  background: var(--color-primary);
+.contact-form form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .contact-info a {
