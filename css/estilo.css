@@ -22,14 +22,55 @@
   --color-secondary: #f0f8ff;
   --color-border: #d0d7de;
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --gradient-start: #dbe5f0;
+  --gradient-end: #e5ecf3;
+  --nav-link-hover-text: var(--color-bg);
   --transition: 0.3s ease;
   --bs-body-font-family: "Inter", sans-serif;
 }
 
+/* Dark theme */
+[data-bs-theme="dark"] {
+  --color-bg: #121212;
+  --color-surface: #1e1e1e;
+  --color-primary: #ffffff;
+  --color-muted: #b0b0b0;
+  --color-border: #333333;
+  --color-secondary: #2a2a2a;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --gradient-start: #1a1a1a;
+  --gradient-end: #121212;
+  --nav-link-hover-text: #ffffff;
+  --bs-body-color: var(--color-primary);
+  --bs-body-bg: var(--color-bg);
+  --bs-border-color: var(--color-border);
+  --bs-secondary-bg: var(--color-secondary);
+  --bs-secondary-rgb: 42,42,42;
+}
+
+[data-bs-theme="dark"] .bg-light {
+  background-color: var(--color-surface) !important;
+}
+
+[data-bs-theme="dark"] .logo-os {
+  filter: grayscale(100%) invert(1);
+}
+
+[data-bs-theme="dark"] .text-primary-emphasis {
+  color: var(--bs-primary) !important;
+}
+
+[data-bs-theme="dark"] .hero .text-primary {
+  color: var(--bs-primary) !important;
+}
+/* EndDark theme */
+
+
 body {
-  background: radial-gradient(circle at top left, #dbe5f0, #e5ecf3);
+  background: radial-gradient(circle at top left, var(--gradient-start), var(--gradient-end));
   min-height: 100vh;
   flex-direction: column;
+  display: flex;
   transition: background var(--transition), color var(--transition);
 }
 
@@ -66,7 +107,7 @@ body {
 .navbar-nav .nav-link:hover {
   transition: all var(--transition);
   background-color: var(--color-accent);
-  color: var(--color-bg);
+  color: var(--nav-link-hover-text);
 }
 
 @media (min-width: 992px) {
@@ -420,7 +461,8 @@ footer a:hover {
   padding: 0.5rem;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  background-color: #f5f5f5;
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
 }
 
 .contact-form form {
@@ -477,6 +519,20 @@ footer a:hover {
   margin: 1rem 0;
   line-height: 1.8;
 }
+
+/* Theme Button */
+@media (width > 992px) {
+  .theme-toggle{
+    transition: all var(--transition);
+  }
+  .theme-toggle i {
+    color: var(--bs-primary);
+  }
+  .theme-toggle:hover {
+    transform: scale(1.1);
+  }
+}
+/* End Theme Button */
 
 /* Animaciones */
 @keyframes fadeIn {
