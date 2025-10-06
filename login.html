@@ -4,7 +4,7 @@
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Catalogo - Clínica IDW</title>
+ <title>Login - Clínica IDW</title>
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
   integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
   crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -36,42 +36,40 @@
       <li class="nav-item"><a class="nav-link py-lg-2 p-3 rounded" href="contacto.html">Contacto</a></li>
       <li class="nav-item"><a class="nav-link py-lg-2 p-3 rounded" href="catalogo.html">Catálogo</a></li>
       <li class="nav-item"><a class="nav-link py-lg-2 p-3 rounded" href="reserva.html">Reservar Turno</a></li>
-      <li class="nav-item"><a class="nav-link py-lg-2 p-3 rounded" href="login.html">Ingresá</a></li>
      </ul>
     </div>
    </div>
   </nav>
  </header>
  <main>
-  <section class="container py-5 d-flex flex-wrap gap-3 justify-content-center">
-   <div class="card" style="width: 18rem;">
-    <img src="https://www.loremfaces.net/256/id/1.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-     <h5 class="card-title">Clínica Médica</h5>
-     <p class="card-text">Atención integral del adulto, con prevención, diagnóstico temprano y tratamientos
-      personalizados para mantener la salud en equilibrio constante.</p>
-     <a href="reserva.html" class="btn btn-primary">Reservar turno</a>
+  <div class="container py-5">
+   <div class="row justify-content-center">
+    <div class="col-md-6">
+     <div class="card shadow">
+      <div class="card-header bg-primary text-white text-center">
+       <h4 class="py-2">Iniciar Sesión</h4>
+      </div>
+      <div class="card-body">
+       <form id="formLogin">
+        <div class="mb-3">
+         <label for="usuario" class="form-label">Usuario</label>
+         <input type="text" class="form-control" id="user" required placeholder="Ingrese su usuario">
+        </div>
+        <div class="mb-3">
+         <label for="contrasena" class="form-label">Contraseña</label>
+         <input type="password" class="form-control" id="pass" required placeholder="Ingrese su contraseña">
+        </div>
+        <div class="d-flex justify-content-between">
+         <button type="submit" class="btn btn-primary w-50 me-2">Ingresar</button>
+         <a href="index.html" class="btn btn-secondary w-50">Cancelar</a>
+        </div>
+       </form>
+      </div>
+     </div>
     </div>
    </div>
-   <div class="card" style="width: 18rem;">
-    <img src="https://www.loremfaces.net/256/id/2.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-     <h5 class="card-title">Pediatría</h5>
-     <p class="card-text">Cuidado especializado de niños y adolescentes, con controles, vacunas y orientación familiar
-      para promover crecimiento sano y seguro.</p>
-     <a href="reserva.html" class="btn btn-primary">Reservar turno</a>
-    </div>
-   </div>
-   <div class="card" style="width: 18rem;">
-    <img src="https://www.loremfaces.net/256/id/3.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-     <h5 class="card-title">Odontología</h5>
-     <p class="card-text">Prevención y tratamientos odontológicos completos, cuidando la salud bucal y ofreciendo
-      soluciones estéticas para lograr sonrisas saludables.</p>
-     <a href="reserva.html" class="btn btn-primary">Reservar turno</a>
-    </div>
-   </div>
-  </section>
+  </div>
+
  </main>
  <footer class="bg-body-tertiary text-center text-lg-start text-muted pt-5">
   <div class="container">
@@ -118,6 +116,7 @@
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
  <script src="./js/theme.js"></script>
+ <script src="./js/login.js" type="module"></script>
 </body>
 
 </html>
