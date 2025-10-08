@@ -1,16 +1,12 @@
 
 
+import { api } from './api.js';
+
 const ERROR_MESSAGES = {
   EMPTY_FIELDS: 'Por favor, complete todos los campos',
-  INVALID_CREDENTIALS: 'Usuario y/o Password Incorrectos'
 };
 const ERROR_CONTAINER_CLASS = 'alert alert-danger d-none mb-3';
 const ADMIN_PAGE = "admin-index.html";
-
-const FAKE_CREDENTIALS = {
-  username: "admin",
-  password: "1234"
-}
 
 const domElements = {
   form: null,
@@ -38,11 +34,7 @@ const clearError = () => {
   domElements.errorContainer?.classList.add('d-none');
 };
 
-const validateCredentials = (username, password) => {
-  return username.trim() === FAKE_CREDENTIALS.username && password === FAKE_CREDENTIALS.password
-}
-
-const handleLogin = (e) => {
+const handleLogin = async (e) => {
   e.preventDefault();
   clearError();
 
@@ -54,13 +46,17 @@ const handleLogin = (e) => {
     return showError(ERROR_MESSAGES.EMPTY_FIELDS)
   }
 
-  const isValid = validateCredentials(username, password)
-
-  if (!isValid) {
-    return showError(ERROR_MESSAGES.INVALID_CREDENTIALS)
+  const submitButton = domElements.form.querySelector("button");
+  try {
+    submitButton.disabled = true;
+    await api.login(username, password);
+    domElements.form.reset();
+    window.location.replace(ADMIN_PAGE);
+  } catch (error) {
+    showError(error.message);
+  } finally{
+    submitButton.disabled = false;
   }
-  domElements.form.reset()
-  window.location.replace(ADMIN_PAGE);
 };
 
 
@@ -75,7 +71,7 @@ function initLogin() {
   domElements.errorContainer = setupErrorContainer();
   domElements.form.prepend(domElements.errorContainer);
   Object.values(domElements.inputs).forEach(input => input.addEventListener("input", clearError))
-  formLogin.addEventListener("submit", handleLogin);
+  domElements.form.addEventListener("submit", handleLogin);
 }
 
 document.addEventListener("DOMContentLoaded", initLogin)
