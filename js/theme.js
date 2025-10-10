@@ -9,7 +9,7 @@ class ThemeUI {
   static ELEMENT_SPAN = "span";
   static ELEMENT_LIST_ITEM = "li";
   static TOGGLE_BUTTON_CLASSES =
-    "btn theme-toggle btn-link py-lg-2 py-3 text-muted d-flex align-items-center text-decoration-none p-2";
+    "btn theme-toggle btn-link py-lg-2 py-3 bg-transparent border-0 text-muted d-flex align-items-center text-decoration-none p-2";
   static ATTRIBUTE_ARIA_LABEL = "aria-label";
   static ATTRIBUTE_TITLE = "title";
   static ATTRIBUTE_TYPE = "type";

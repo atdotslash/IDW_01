@@ -1,7 +1,7 @@
 
 
 import { api } from './api.js';
-
+import { buttonState } from './utils/ui.js'
 const ERROR_MESSAGES = {
   EMPTY_FIELDS: 'Por favor, complete todos los campos',
 };
@@ -46,16 +46,16 @@ const handleLogin = async (e) => {
     return showError(ERROR_MESSAGES.EMPTY_FIELDS)
   }
 
-  const submitButton = domElements.form.querySelector("button");
+  const submitButton = buttonState.disable(domElements.form.querySelector("button[type='submit']"), "Ingresando...");
   try {
-    submitButton.disabled = true;
     await api.login(username, password);
     domElements.form.reset();
     window.location.replace(ADMIN_PAGE);
   } catch (error) {
     showError(error.message);
+    domElements.inputs.user.focus({ preventScroll: true });
   } finally{
-    submitButton.disabled = false;
+    submitButton.restore();
   }
 };
 
