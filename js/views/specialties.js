@@ -1,69 +1,110 @@
 import { api } from '../api.js';
+import { getFormData, renderForm } from '../components/form.js';
 import { createReusableModal } from '../components/modal.js';
 import notification from '../components/notifications.js';
-import { buttonState, formState } from '../utils/ui.js';
+import { showSpinner } from '../components/spinner.js';
+import { buttonState } from '../utils/ui.js';
 
 const SELECTORS = {
   TABLE_BODY: '#specialties-table-body',
   ADD_BUTTON: '#add-specialty-btn',
+  TABLE: '#specialties-table',
 };
 
-function getSpecialtyFormHTML(specialty = {}) {
-  const { name = '', loading = false } = specialty;
-  return `
-    <form id="specialty-form" novalidate>
-      <div class="mb-3">
-        <label for="specialty-name" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="specialty-name" value="${name}" ${loading ? 'disabled' : ''} required>
-        <div class="invalid-feedback">El nombre es obligatorio.</div>
-      </div>
-    </form>
-  `;
+
+function createTableRow(specialty) {
+  const tr = document.createElement("tr")
+  tr.dataset.id = specialty.id.toString()
+  tr.innerHTML = `
+    <td>${specialty.id}</td>
+    <td>${specialty.name}</td>
+    <td class="d-flex gap-2 align-items-center ">
+      <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${specialty.id}">
+        <i class="fa-solid fa-pencil"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${specialty.id}">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </td>
+    `
+  return tr
 }
 
-async function renderSpecialtiesTable() {
-  const tableBody = document.querySelector(SELECTORS.TABLE_BODY);
-  if (!tableBody) return;
 
-  try {
-    const specialties = await api.getSpecialties();
-    tableBody.innerHTML = specialties.map((specialty, index) => `
-      <tr data-id="${specialty.id}">
-        <td>${index + 1}</td>
-        <td>${specialty.name}</td>
-        <td class="d-flex gap-2 align-items-center ">
-          <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${specialty.id}">
-            <i class="fa-solid fa-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${specialty.id}">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `).join('');
-  } catch (error) {
-    console.error('Error al cargar las especialidades:', error);
-    tableBody.innerHTML = '<tr><td colspan="3" class="text-center">No se pudieron cargar las especialidades.</td></tr>';
-  }
-}
-
-function handleFormSubmit({ event, form, modal, action, specialtyId }) {
-  event.preventDefault();
-  if (!form.checkValidity()) {
-    form.classList.add('was-validated');
+function renderSpecialtiesTable(specialties, container) {
+  if (specialties.length === 0) {
+    container.innerHTML =
+      '<p class="text-center">No hay especialidades registradas.</p>';
     return;
   }
-  const nameInput = form.querySelector('#specialty-name');
-  const data = { name: nameInput.value };
 
-  const saveButton = buttonState.disable(event.currentTarget, 'Guardando...') 
-  const myForm = formState.disableForm(form)
+  container.innerHTML = `
+   <div class="table-responsive">
+                  <table class="table  table-hover align-middle">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="specialties-table-body">
+                    ${specialties.map((specialty) =>
+    createTableRow(specialty).outerHTML
+  ).join('')}
+                    </tbody>
+                  </table>`;
+  const tableBody = document.querySelector(SELECTORS.TABLE_BODY);
+  tableBody?.addEventListener('click', handleTableClick);
 
-  action({ "id": specialtyId, data })
-    .then(({ message }) => {
-      renderSpecialtiesTable();
-      console.log(message)
+
+}
+
+const removeTableRow = (specialtyId) => {
+  const row = document.querySelector(
+    `${SELECTORS.TABLE} tr[data-id="${specialtyId}"]`
+  );
+  row?.remove();
+};
+
+const addTableRow = (specialty) => {
+  const tableBody = document.querySelector(SELECTORS.TABLE_BODY);
+  if (tableBody) {
+    const newRow = createTableRow(specialty);
+    tableBody.appendChild(newRow);
+  } else {
+    const mainContent = document.getElementById("content");
+    if (mainContent) renderSpecialties(mainContent);
+  }
+};
+
+const updateTableRow = (specialty) => {
+  const row = document.querySelector(
+    `${SELECTORS.TABLE} tr[data-id="${specialty.id}"]`
+  );
+  if (row) {
+    const newRow = createTableRow(specialty);
+    row.replaceWith(newRow);
+  }
+};
+
+function handleFormSubmit({ event, form, modal, action, specialtyId }) {
+  form.classList.add('was-validated');
+  if (!form.checkValidity()) {
+    return;
+  }
+
+  const formData = getFormData(form)
+  const saveButton = buttonState.disable(event.currentTarget, 'Guardando...')
+
+  action({ "id": specialtyId, data: formData })
+    .then(({ message, data }) => {
       notification.success(message);
+      if (specialtyId) {
+        updateTableRow(data);
+        return
+      }
+      addTableRow(data);
     })
     .catch(error => {
       console.error(error);
@@ -71,65 +112,83 @@ function handleFormSubmit({ event, form, modal, action, specialtyId }) {
       notification.error(`Error al ${modalTitle}`);
     })
     .finally(() => {
-      myForm.restore()
       // Habilitar botón y restaurar texto original
       saveButton.restore()
       modal.hide();
     });
 }
 
-function openSpecialtyModal(specialty = {}, button = null) {
-  const isEditing = Boolean(specialty.id);
+async function openSpecialtyModal(specialty) {
+  const isEditing = Boolean(specialty?.id);
   const modalId = isEditing ? `edit-specialty-modal-${specialty.id}` : 'add-specialty-modal';
   const title = isEditing ? 'Editar Especialidad' : 'Agregar Especialidad';
   const action = isEditing ? api.updateSpecialty : api.createSpecialty;
-
-  const triggerButton = button || null
-
   const modal = createReusableModal({
     id: modalId,
     title,
-    body: getSpecialtyFormHTML(specialty),
+    body: '',
     footerButtons: [
-      { text: 'Cerrar', className: 'btn btn-secondary', onClick: () => modal.hide() },
+      { text: 'Cerrar', className: 'btn btn-secondary', onClick: (_, modal) => modal.hide() },
       {
         text: 'Guardar',
         className: 'btn btn-primary',
-        onClick: (event) => {
-          const form = modal.getElement().querySelector('#specialty-form');
-          handleFormSubmit({ event, form, modal, action, specialtyId: specialty.id });
-        }
+        disabled: true
+
       },
-    ], onHide: () => {
-      if (triggerButton) {
-        triggerButton.restore()
-      }
-    }
+    ]
   });
-  modal.show();
+  const removeSpinner = showSpinner(modal.getElement().querySelector(".modal-body"), { text: 'Cargando...' });
+  try {
+    let specialtyData;
+    if (isEditing) {
+      specialtyData = await api.getSpecialtiesById(specialty.id);
+    } else {
+      specialtyData = {};
+    }
+    const form = renderForm([
+      { name: "name", label: "Nombre", type: "text", validationMessage: "El nombre es obligatorio", required: true },
+    ], specialtyData)
+    const modalBody = modal.getElement().querySelector(".modal-body");
+    if (modalBody) {
+      removeSpinner();
+      modalBody.appendChild(form);
+      const button = modal.getElement().querySelector(".modal-footer .btn-primary");
+      if (button) {
+        button.disabled = false;
+        button.onclick = (event) => {
+          handleFormSubmit({ event, form, modal, action, specialtyId: specialty?.id });
+        }
+      }
+
+    }
+  } catch (error) {
+    console.error(error);
+    notification.error('Error al cargar la especialidad. Intente nuevamente.');
+    modal.hide();
+  }
 }
 
 function handleDeleteSpecialty(specialtyId) {
-  const modal = createReusableModal({
+  createReusableModal({
     id: `delete-specialty-modal-${specialtyId}`,
     title: 'Confirmar Eliminación',
-    body: '¿Está seguro de que desea eliminar esta especialidad?',
+    body: '<p>¿Está seguro de que desea eliminar esta especialidad? Esta acción no se puede deshacer.</p>',
     footerButtons: [
-      { text: 'Cancelar', className: 'btn btn-secondary', onClick: () => modal.hide() },
+      { text: 'Cancelar', className: 'btn btn-secondary', onClick: (_, modal) => modal.hide() },
       {
         text: 'Eliminar',
         className: 'btn btn-danger',
-        onClick: (event) => {
-          const button = buttonState.disable(event.currentTarget)
+        onClick: (event, modal) => {
+          const button = buttonState.disable(event.target, 'Eliminando...')
           api.deleteSpecialty(specialtyId)
             .then(() => {
-              renderSpecialtiesTable();
+              removeTableRow(specialtyId)
               notification.success('Especialidad eliminada correctamente');
             })
             .catch(error => {
               console.error(error)
-              notification.error('Error al eliminar la especialidad');
-            }).finally( () => {
+              notification.error('Error al eliminar la especialidad. Intente nuevamente.');
+            }).finally(() => {
               button.restore()
               modal.hide()
             }
@@ -138,25 +197,22 @@ function handleDeleteSpecialty(specialtyId) {
       }
     ]
   });
-  modal.show();
 }
 
-async function handleTableClick(event) {
+function handleTableClick(event) {
   const editButton = event.target.closest('.edit-btn');
   const deleteButton = event.target.closest('.delete-btn');
   if (editButton) {
-    const button = buttonState.disable(editButton, '')
     const specialtyId = Number(editButton.dataset.id);
     try {
-      const specialty = await api.getSpecialtiesById(specialtyId);
-      if (specialty) {
-        openSpecialtyModal(specialty, button);
+      if (specialtyId) {
+        openSpecialtyModal({ id: specialtyId });
       }
     } catch (error) {
       console.error('Error al obtener datos para editar:', error);
-      notification.error('Error al cargar la especialidad');
-    } 
-    return;
+      notification.error('Error al cargar la especialidad. Intente nuevamente.');
+    }
+    return
   }
 
   if (deleteButton) {
@@ -165,14 +221,60 @@ async function handleTableClick(event) {
   }
 }
 
-export function initSpecialties() {
-  renderSpecialtiesTable();
+export async function renderSpecialties(container) {
+  container.innerHTML = `
+          <section id="especialidades-section" class="content-section">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="#dashboard">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  Especialidades
+                </li>
+              </ol>
+            </nav>
+            <div class=" d-flex flex-column flex-lg-row gap-2 gap-lg-0 justify-content-between align-items-center my-4">
+              <h2 class="m-0 text-body">Gestión de Especialidades</h2>
+              <button id="add-specialty-btn" class="btn align-self-stretch btn-primary">
+                <i class="fa-solid fa-plus me-2"></i>Agregar Especialidad
+              </button>
+            </div>
+            <div class="card bg-light">
+              <div class="card-header">
+                <h5 class="card-title m-0">Todas las especialidades</h5>
+              </div>
+              <div class="card-body">
+                  <div id=${SELECTORS.TABLE.substring(1)}></div>
+               </div>
+            </div>
+          </section>
+  `;
 
-  const addButton = document.querySelector(SELECTORS.ADD_BUTTON);
-  addButton?.addEventListener('click', () => 
-    openSpecialtyModal({}, buttonState.disable(addButton))
-  )
+  container
+    .querySelector(SELECTORS.ADD_BUTTON)
+    ?.addEventListener("click", () => openSpecialtyModal());
 
-  const tableBody = document.querySelector(SELECTORS.TABLE_BODY);
-  tableBody?.addEventListener('click', handleTableClick);
+
+  const tableContainer = container.querySelector(SELECTORS.TABLE);
+
+  const removeSpinner = showSpinner(tableContainer, {
+    text: 'Cargando especialidades...',
+  });
+
+  try {
+    const specialties = await api.getSpecialties();
+
+    renderSpecialtiesTable(specialties, tableContainer);
+  } catch (error) {
+    console.error('Error al cargar las especialidades:', error);
+
+    tableContainer.innerHTML =
+      '<div class="alert alert-danger">No se pudieron cargar las especialidades.</div>';
+  } finally {
+    removeSpinner();
+  }
 }
+
+
+

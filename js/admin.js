@@ -1,80 +1,98 @@
+import { renderDashboard } from "./views/dashboard.js";
+import { renderSpecialties } from "./views/specialties.js";
 
-
-import { initSpecialties } from './views/specialties.js';
-
-const DEFAULT_SECTION = "dashboard"
 const SELECTORS = {
   SIDEBAR: "#sidebar",
   SIDEBAR_COLLAPSE: "#sidebarCollapse",
   NAV_LINKS: ".nav-link",
-  CONTENT_SECTIONS: ".content-section"
+  NAV_ITEMS: ".nav-link",
+  DEFAULT_SECTION_NAME: "dashboard",
 };
 const MOBILE_BREAKPOINT = 768;
-const SECTION_HIDDEN_CLASS = "d-none";
 const TARGET_SECTION_ID_ATTRIBUTE = "data-section";
 
+export const sections = [
+  {
+    id: "especialidades-section",
+    name: "specialties",
+    component: renderSpecialties,
+  },
+  { id: "dashboard-section", name: "dashboard", component: renderDashboard },
+];
 
-function switchSection(sectionId) {
-  const contentSections = document.querySelectorAll(SELECTORS.CONTENT_SECTIONS);
+function toggleNavLinkActiveClass(navLink, isActive) {
+  navLink.classList.toggle("active", isActive);
+  navLink.parentElement.classList.toggle("active", isActive);
+}
+
+function updateActiveNavLinks(sectionId) {
   const navLinks = document.querySelectorAll(SELECTORS.NAV_LINKS);
-
-  // ocultar todas las secciones
-  contentSections.forEach((section) => {
-    section.classList.add(SECTION_HIDDEN_CLASS);
-  });
-  // mostrar la seccion seleccionada
-  const targetSection = document.getElementById(sectionId);
-  if (targetSection) {
-    targetSection.classList.remove(SECTION_HIDDEN_CLASS);
-  }
   navLinks.forEach((navLink) => {
-
     const targetSectionId = navLink.getAttribute(TARGET_SECTION_ID_ATTRIBUTE);
-    const isActive = targetSectionId === sectionId
-    navLink.classList.toggle("active", isActive);
-    if (navLink.parentElement.tagName === "LI") {
-      navLink.parentElement.classList.toggle("active", isActive);
-    }
+    const isActive = targetSectionId === sectionId;
+    toggleNavLinkActiveClass(navLink, isActive);
   });
 }
 
+function renderSection(sectionId) {
+  const content = document.getElementById("content");
+  const section = sections.find((section) => section.id === sectionId);
+  if (section) {
+    return section.component(content);
+  }
+  content.innerHTML = "<p>Sección no encontrada</p>";
+}
 
-function navigateToSection(sectionId, updateUrl = true) {
-  if (!sectionId) return
+function navigateToSection(
+  sectionId,
+  { replace, updateUrl } = { updateUrl: false, replace: false }
+) {
+  console.log("SectionID", sectionId)
+  if (!sectionId) return;
 
   if (updateUrl) {
-    const navLink = document.querySelector(`${SELECTORS.NAV_LINKS}[${TARGET_SECTION_ID_ATTRIBUTE}=${sectionId}]`)
+    const navLink = document.querySelector(
+      `${SELECTORS.NAV_LINKS}[${TARGET_SECTION_ID_ATTRIBUTE}=${sectionId}]`
+    );
     if (navLink) {
       const hash = navLink.getAttribute("href").substring(1);
-      history.pushState(null, "", `#${hash}`)
+      if (replace) {
+        history.replaceState(null, "", `#${hash}`);
+      } else {
+        history.pushState(null, "", `#${hash}`);
+      }
     }
   }
-  // cambiar de sección
-  switchSection(sectionId);
+  renderSection(sectionId);
+  updateActiveNavLinks(sectionId);
+
   // cerrar sidebar en mobile
   const sidebar = document.querySelector(SELECTORS.SIDEBAR);
   if (window.innerWidth < MOBILE_BREAKPOINT && sidebar) {
     sidebar.classList.remove("collapsed");
   }
-
 }
 
+function getSectionIdFromHash(hash) {
+  const sectionName = hash.substring(1) || SELECTORS.DEFAULT_SECTION_NAME;
+  const navLink = document.querySelector(
+    `${SELECTORS.NAV_ITEMS}[href="#${sectionName}"]`
+  );
+  return navLink ? navLink.getAttribute(TARGET_SECTION_ID_ATTRIBUTE) : null;
+}
 
 function handleInitialLoad() {
-  const hash = window.location.hash.substring(1);
-  // si no hay hash, se muestra la seccion dashboard
-  const section = hash || DEFAULT_SECTION;
-  const targetLink = document.querySelector(`${SELECTORS.NAV_LINKS}[href="#${section}"]`)
-  if (targetLink) {
-    navigateToSection(targetLink.getAttribute(TARGET_SECTION_ID_ATTRIBUTE), false)
-  }
+  const sectionId = getSectionIdFromHash(window.location.hash);
+  navigateToSection(sectionId, { replace: true, updateUrl: false });
 }
 
 function handleNavigation(event) {
   const navLink = event.target.closest(SELECTORS.NAV_LINKS);
   if (navLink) {
     event.preventDefault();
-    navigateToSection(navLink.getAttribute(TARGET_SECTION_ID_ATTRIBUTE))
+    navigateToSection(navLink.getAttribute(TARGET_SECTION_ID_ATTRIBUTE), {
+      updateUrl: true,
+    });
   }
 }
 function handleSidebarCollapse(sidebar) {
@@ -82,29 +100,31 @@ function handleSidebarCollapse(sidebar) {
 }
 
 function setupEventListeners(sidebar, sidebarCollapse) {
-
   // Manejar cambios en la URL (atras y adelante)
-  window.addEventListener("popstate", handleInitialLoad);
+  window.addEventListener("popstate", () => {
+    const sectionId = getSectionIdFromHash(window.location.hash);
+    navigateToSection(sectionId);
+  });
   // Manejar clics en los enlaces del sidebar
-  sidebar.addEventListener("click", handleNavigation)
+  sidebar.addEventListener("click", handleNavigation);
   // Manejar click en el boton de collapse
-  sidebarCollapse.addEventListener("click", ()=>handleSidebarCollapse(sidebar));
-
+  sidebarCollapse.addEventListener("click", () =>
+    handleSidebarCollapse(sidebar)
+  );
 }
-
 
 function initAdmin() {
   const sidebar = document.querySelector(SELECTORS.SIDEBAR);
   const sidebarCollapse = document.querySelector(SELECTORS.SIDEBAR_COLLAPSE);
   if (!sidebar || !sidebarCollapse) {
-    return
+    return;
   }
-  handleInitialLoad()
+  handleInitialLoad();
 
-  setupEventListeners(sidebar, sidebarCollapse)
+  setupEventListeners(sidebar, sidebarCollapse);
 
   // Inicializar modulos de las vistas
-  initSpecialties();
+  // initSpecialties();
 }
 
 document.addEventListener("DOMContentLoaded", initAdmin);

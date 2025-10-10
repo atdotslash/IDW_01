@@ -29,7 +29,7 @@ function getNextId(items) {
 
 
 const delay = (callback) => {
-  setTimeout(callback, 1000);
+  setTimeout(callback, 2500);
 };
 
 
@@ -55,9 +55,10 @@ export const api = {
   },
 
   getSpecialtiesById: (id) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
+      const specialty = loadData().specialties.find(s => s.id === id) 
       delay(() => {
-        resolve(loadData().specialties.find(s => s.id === id));
+        specialty ? resolve(specialty) : reject(null);
       });
     });
   },
