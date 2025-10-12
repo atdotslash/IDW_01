@@ -1,7 +1,14 @@
 
 
+export const MODAL_SIZES = {
+  SMALL: "modal-sm",
+  LARGE: "modal-lg",
+  EXTRA_LARGE: "modal-xl",
+  DEFAULT: ""
+}
 
-export function createReusableModal({ id = "modal-app", title, body, footerButtons = [], onHide = null }) {
+
+export function createReusableModal({ id = "modal-app", size = MODAL_SIZES.DEFAULT, title, body, footerButtons = [], onHide = null }) {
 
 
   const footerHTML = footerButtons.length
@@ -20,7 +27,7 @@ export function createReusableModal({ id = "modal-app", title, body, footerButto
   modalElement.ariaLabelledby = `${id}Label`;
   modalElement.ariaHidden = true;
   modalElement.innerHTML = `
-      <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-dialog modal-dialog-centered ${size}">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="${id}Label">${title}</h5>
@@ -63,7 +70,6 @@ export function createReusableModal({ id = "modal-app", title, body, footerButto
 
 
   function handleShown() {
-    // enfocar el primer input cuando se muestre el modal
     const firstInput = modalElement.querySelector('input, select, textarea');
     firstInput?.focus({ preventScroll: true });
   }

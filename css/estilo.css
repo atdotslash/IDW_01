@@ -611,11 +611,21 @@ footer a:hover {
 }
 
 /* Admin Dashboard */
+
+  .stat {
+    transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+  }
+
   #sidebar {
       min-width: 250px;
       max-width: 250px;
       min-height: 100vh;
       transition: var(--transition);
+
   }
 
   #sidebar.collapsed {
@@ -641,12 +651,4 @@ footer a:hover {
       background-color: var(--bs-primary);
       color: white;
       font-weight: 600;
-  }
-  @media (width <= 768px) {
-      #sidebar {
-          margin-left: -250px;
-      }
-      #sidebar.collapsed {
-          margin-left: 0;
-      }
   }

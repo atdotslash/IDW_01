@@ -1,120 +1,75 @@
+import storageService from "./storage/index.js";
 const FAKE_CREDENTIALS = {
   username: "admin",
-  password: "1234"
-}
-
-const STORAGE_KEY = 'idw_admin_data';
-
-const DEFAULT_DATA = {
-  specialties: [
-    { id: 1, name: "Cardiología" },
-    { id: 2, name: "Dermatología" },
-    { id: 3, name: "Pediatría" },
-    { id: 4, name: "Ginecología" }
-  ]
+  password: "1234",
 };
 
-function loadData() {
-  const storedData = localStorage.getItem(STORAGE_KEY);
-  return storedData ? JSON.parse(storedData) : { ...DEFAULT_DATA };
-}
+const simulateAsyncRequest = (operation, delay = 1000) => {
+  return new Promise((resolve, reject) => {
 
-function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-function getNextId(items) {
-  return items.length > 0 ? Math.max(...items.map(item => item.id)) + 1 : 1;
-}
-
-
-const delay = (callback) => {
-  setTimeout(callback, 2500);
+    setTimeout(() => {
+      try {
+        const result = operation();
+        resolve(result);
+      } catch (error) {
+        console.error(error);
+        reject(error);
+      }
+    }, delay);
+  });
 };
-
 
 export const api = {
   login: (username, password) => {
-    return new Promise((resolve, reject) => {
-      delay(() => {
-        if (username === FAKE_CREDENTIALS.username && password === FAKE_CREDENTIALS.password) {
-          resolve({ success: true });
-        } else {
-          reject({ success: false, message: "Usuario y/o Password Incorrectos" });
-        }
-      });
-    });
+    return simulateAsyncRequest(() => {
+      if (
+        username === FAKE_CREDENTIALS.username &&
+        password === FAKE_CREDENTIALS.password
+      ) {
+        storageService.session.setAdmin({ username });
+        return true
+      }
+      throw new Error("Usuario y/o Password Inválidos")
+    })
   },
 
+  getInsuranceCompanies: () => {
+    return simulateAsyncRequest(() => storageService.insuranceCompanies.getAll())
+  },
+
+  getDoctors: () => {
+    return simulateAsyncRequest(() => storageService.doctors.getAll())
+  },
+
+  getDoctorById: (id) => {
+    return simulateAsyncRequest(() => storageService.doctors.getById(id))
+  },
+  createDoctor: ({ data }) => {
+    return simulateAsyncRequest(() => storageService.doctors.create(data))
+  },
+  updateDoctor: ({ id, data }) => {
+    return simulateAsyncRequest(() => storageService.doctors.update(id, data))
+  },
+  deleteDoctor: ({ id }) =>
+    simulateAsyncRequest(() => storageService.doctors.remove(id))
+  ,
   getSpecialties: () => {
-    return new Promise((resolve) => {
-      delay(() => {
-        resolve([...loadData().specialties]);
-      });
-    });
+    return simulateAsyncRequest(() => storageService.specialties.getAll())
   },
 
   getSpecialtiesById: (id) => {
-    return new Promise((resolve, reject) => {
-      const specialty = loadData().specialties.find(s => s.id === id) 
-      delay(() => {
-        specialty ? resolve(specialty) : reject(null);
-      });
-    });
+    return simulateAsyncRequest(() => storageService.specialties.getById(id))
   },
 
-  createSpecialty: ({data}) => {
-    return new Promise((resolve) => {
-      delay(() => {
-        const loadedData = loadData()
-        const newSpecialty = {
-          id: getNextId(loadedData.specialties),
-          ...data,
-        };
-        loadedData.specialties.push(newSpecialty);
-        saveData(loadedData);
-        resolve({data: newSpecialty, message: "Especialidad guardada correctamente"});
-      });
-    });
+  createSpecialty: ({ data }) => {
+    return simulateAsyncRequest(() => storageService.specialties.create(data))
   },
 
-  updateSpecialty: ({id, data: specialtyData}) => {
-
-    return new Promise((resolve, reject) => {
-      
-      delay(() => {
-        const loadedData = loadData()
-        const index = loadedData.specialties.findIndex(s => s.id === id);
-        if (index !== -1) {
-          loadedData.specialties[index] = { ...loadedData.specialties[index], ...specialtyData };
-          saveData(loadedData)
-          resolve({data: loadedData.specialties[index], message: "Especialidad actualizada correctamente"});
-        } else {
-          reject({ message: "Especialidad no encontrada" });
-        }
-      });
-    });
+  updateSpecialty: ({ id, data }) => {
+    return simulateAsyncRequest(() => storageService.specialties.update(id, data))
   },
 
   deleteSpecialty: (id) => {
-    return new Promise((resolve, reject) => {
-      delay(() => {
-        const data = loadData()
-        const isBeingUsed = false; 
-        
-        if (isBeingUsed) {
-          return reject({ message: "No se puede eliminar la especialidad porque está en uso." });
-        }
-
-        const index = data.specialties.findIndex(s => s.id === id);
-        if (index !== -1) {
-          data.specialties.splice(index, 1);
-          saveData(data)
-          resolve({  success: true });
-        } else {
-          reject({ message: "Especialidad no encontrada" });
-        }
-      });
-    });
+    return simulateAsyncRequest(() => storageService.specialties.remove(id))
   },
 };

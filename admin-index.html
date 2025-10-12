@@ -29,7 +29,7 @@
 <body>
   <div class="d-flex bg-light text-light">
     <!-- Sidebar -->
-    <aside id="sidebar" class="bg-light text-light shadow">
+    <aside id="sidebar" class="collapse d-lg-block bg-light text-light shadow">
       <div class="sidebar-header p-3 d-flex align-items-center">
         <a href="/admin-index.html" class="d-flex align-items-center text-decoration-none text-body">
           <img src="./assets/logo.png" alt="Logo" class="logo-img me-2" />
@@ -66,15 +66,15 @@
         </li>
         <li>
           <a href="#reservas" class="nav-link px-3 py-2 d-flex align-items-center" data-section="reservas-section">
-            <i class="fa-solid fa-clipboard-list me-2"></i><span>Reservas</span>
+            <i class="fa-solid fa-calendar-alt me-2"></i><span>Reservas</span>
           </a>
         </li>
       </ul>
     </aside>
-    <div  class="w-100 d-flex flex-column min-vh-100">
+    <div class="w-100 d-flex flex-column min-vh-100">
       <nav class="navbar navbar-expand-lg bg-light text-body shadow-sm">
         <div class="container-fluid">
-          <button type="button" id="sidebarCollapse" class="btn btn-light text-body bg-transparent border-0">
+          <button type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" id="sidebarCollapse" class="btn d-lg-none btn-light text-body bg-transparent border-0">
             <i class="fa-solid fa-bars"></i>
           </button>
           <div class="collapse navbar-collapse">
@@ -87,11 +87,11 @@
               </li>
 
               <li class="nav-item dropdown">
-                <a class="btn btn-sm  dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                  <i class="fa-solid fa-user me-1"></i> Dr. Perez
+                <a class="btn btn-sm  dropdown-toggle" href="#" role="button" id="user-dropdown"
+                  data-bs-toggle="dropdown">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+                  <li><a class="dropdown-item" id="logout-btn" class="d-none" href="#">Cerrar Sesión</a></li>
                 </ul>
               </li>
             </ul>
