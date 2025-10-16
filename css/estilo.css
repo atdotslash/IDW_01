@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
 
-:root {
+:root, [data-bs-theme="light"] {
   --bs-primary: var(--color-accent);
   --bs-primary-rgb: 0, 119, 182;
   /* RGB de --color-accent (#0077b6) */
@@ -47,7 +47,25 @@
   --bs-secondary-bg: var(--color-secondary);
   --bs-secondary-rgb: 42,42,42;
 }
+.btn-primary {
+  --bs-btn-hover-bg: var(--color-accent-dark);
+  --bs-btn-hover-border-color: var(--color-accent-dark);
+  --bs-btn-bg: var(--color-accent);
+  --bs-btn-border-color: var(--color-accent);
+  --bs-btn-disabled-bg: var(--color-accent);
+  --bs-btn-disabled-border-color: var(--color-accent);
+}
 
+.btn-outline-primary {
+  --bs-btn-color: var(--color-accent);
+  --bs-btn-border-color: var(--color-accent);
+  --bs-btn-hover-bg: var(--color-accent);
+  --bs-btn-hover-border-color: var(--color-accent);
+  --bs-btn-active-bg: var(--color-accent);
+  --bs-btn-active-border-color: var(--color-accent);
+  --bs-btn-disabled-color: var(--color-accent);
+  --bs-btn-disabled-border-color: var(--color-accent);
+}
 [data-bs-theme="dark"] .bg-light {
   background-color: var(--color-surface) !important;
 }
@@ -521,17 +539,15 @@ footer a:hover {
 }
 
 /* Theme Button */
-@media (width > 992px) {
-  .theme-toggle{
-    transition: all var(--transition);
+ .theme-toggle  {
+    &:hover i, &:hover span{
+      color: var(--bs-primary);
+    }
+    & i,& span {
+      transition: all var(--transition);
+
+    }
   }
-  .theme-toggle i {
-    color: var(--bs-primary);
-  }
-  .theme-toggle:hover {
-    transform: scale(1.1);
-  }
-}
 /* End Theme Button */
 
 /* Animaciones */
@@ -591,3 +607,46 @@ footer a:hover {
     display: block;
   }
 }
+
+/* Admin Dashboard */
+
+  .stat {
+    transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  #sidebar {
+      min-width: 250px;
+      max-width: 250px;
+      min-height: 100vh;
+      transition: var(--transition);
+
+  }
+
+  #sidebar.collapsed {
+      margin-left: -250px;
+  }
+
+  #sidebar .sidebar-header {
+      border-bottom: 1px solid var(--bs-border-color);
+  }
+
+ #sidebar ul.sidebar-components a {
+    color: var(--bs-body-color);
+    border-radius: 0.375rem;
+    transition: var(--transition);
+    &:hover {
+      background-color: var(--bs-primary);
+      color: white;
+    }
+    &.active {
+      background-color: var(--bs-primary);
+      color: white;
+      font-weight: 600;
+    }
+}
+
+

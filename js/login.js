@@ -1,17 +1,17 @@
 
 
-const ERROR_MESSAGES = {
-  EMPTY_FIELDS: 'Por favor, complete todos los campos',
-  INVALID_CREDENTIALS: 'Usuario y/o Password Incorrectos'
-};
+import { api } from './api.js';
+import { buttonState } from './shared/ui.js'
+import { MESSAGES, PAGES } from './shared/constants.js';
+import { auth } from './shared/auth.js';
+
 const ERROR_CONTAINER_CLASS = 'alert alert-danger d-none mb-3';
-const ADMIN_PAGE = "admin-index.html";
-
-const FAKE_CREDENTIALS = {
-  username: "admin",
-  password: "1234"
-}
-
+const UI_SELECTORS = {
+  form: "#formLogin",
+  userInput: "#user",
+  passInput: "#pass",
+  submitButton: "#formLogin button[type='submit']",
+};
 const domElements = {
   form: null,
   inputs: {
@@ -21,61 +21,72 @@ const domElements = {
   errorContainer: null
 }
 
-function setupErrorContainer() {
-  const errorContainer = document.createElement('div');
-  errorContainer.className = ERROR_CONTAINER_CLASS;
-  return errorContainer;
-}
 
-const showError = (message) => {
-  if (domElements.errorContainer) {
-    domElements.errorContainer.textContent = message;
-    domElements.errorContainer.classList.remove('d-none');
+const ui = {
+  init: () => {
+    domElements.form = document.querySelector(UI_SELECTORS.form);
+    if (!domElements.form) return false
+    domElements.inputs.user = domElements.form.querySelector(UI_SELECTORS.userInput);
+    domElements.inputs.pass = domElements.form.querySelector(UI_SELECTORS.passInput);
+    domElements.errorContainer = ui.setupErrorContainer();
+    domElements.form.prepend(domElements.errorContainer);
+    domElements.form.querySelectorAll("input").forEach(input => input.addEventListener("input", ui.hideError))
+    return true
+  },
+  setupErrorContainer: () => {
+    const errorContainer = document.createElement('div');
+    errorContainer.className = ERROR_CONTAINER_CLASS;
+    return errorContainer;
+  },
+  showError: (message) => {
+    if (domElements.errorContainer) {
+      domElements.errorContainer.textContent = message;
+      domElements.errorContainer.classList.remove('d-none');
+    }
+  },
+  hideError: () => {
+    domElements.errorContainer?.classList.add('d-none');
+  },
+  getCredentials: () => {
+    const username = domElements.form.querySelector(UI_SELECTORS.userInput).value.trim();
+    const password = domElements.form.querySelector(UI_SELECTORS.passInput).value;
+    return { username, password };
   }
-};
-
-const clearError = () => {
-  domElements.errorContainer?.classList.add('d-none');
-};
-
-const validateCredentials = (username, password) => {
-  return username.trim() === FAKE_CREDENTIALS.username && password === FAKE_CREDENTIALS.password
 }
+
+
+
+
+
+
 
 const handleLogin = (e) => {
   e.preventDefault();
-  clearError();
+  ui.hideError();
 
-  const username = domElements.inputs.user.value.trim()
-  const password = domElements.inputs.pass.value
+  const { username, password } = ui.getCredentials()
 
-  const hasEmptyValues = !username || !password
-  if (hasEmptyValues) {
-    return showError(ERROR_MESSAGES.EMPTY_FIELDS)
+  if (!username) {
+    return ui.showError(MESSAGES.EMPTY_FIELDS)
   }
 
-  const isValid = validateCredentials(username, password)
+  const { restore: buttonRestore } = buttonState.disable(domElements.form.querySelector(UI_SELECTORS.submitButton));
 
-  if (!isValid) {
-    return showError(ERROR_MESSAGES.INVALID_CREDENTIALS)
-  }
-  domElements.form.reset()
-  window.location.replace(ADMIN_PAGE);
+  api.login(username, password).then(auth.redirectToAdmin).catch(error => {
+    ui.showError(error.message);
+  }).finally(() => {
+    buttonRestore?.();
+  })
+
 };
 
 
 function initLogin() {
-  domElements.form = document.getElementById("formLogin");
-  domElements.inputs.user = document.getElementById("user");
-  domElements.inputs.pass = document.getElementById("pass");
-  if (!domElements.form || !domElements.inputs.user || !domElements.inputs.pass) {
-    console.error('Error: No se encontraron todos los elementos del formulario');
-    return;
-  }
-  domElements.errorContainer = setupErrorContainer();
-  domElements.form.prepend(domElements.errorContainer);
-  Object.values(domElements.inputs).forEach(input => input.addEventListener("input", clearError))
-  formLogin.addEventListener("submit", handleLogin);
+
+  auth.checkAndRedirect({ redirectTo: PAGES.ADMIN, redirectIf: true })
+  if (!ui.init()) return
+
+  domElements.form.addEventListener("submit", handleLogin);
 }
 
 document.addEventListener("DOMContentLoaded", initLogin)
