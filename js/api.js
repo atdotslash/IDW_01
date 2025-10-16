@@ -1,25 +1,40 @@
 import storageService from "./storage/index.js";
+
+// Configuración global de la API
+export const apiConfig = {
+  simulateAsync: false,  // Habilitar/deshabilitar simulación asíncrona
+  asyncDelay: 1000      // Tiempo de retraso en milisegundos
+};
+
 const FAKE_CREDENTIALS = {
   username: "admin",
   password: "1234",
 };
 
-const simulateAsyncRequest = (operation, delay = 1000) => {
-  return new Promise((resolve, reject) => {
+const simulateAsyncRequest = (operation, delay) => {
+  const executeOperation = () => {
+    try {
+      const result = operation();
+      return Promise.resolve(result);
+    } catch (error) {
+      console.error(error);
+      return Promise.reject(error);
+    }
+  };
 
+  if (!apiConfig.simulateAsync) {
+    return executeOperation();
+  }
+
+  return new Promise((resolve, reject) => {
     setTimeout(() => {
-      try {
-        const result = operation();
-        resolve(result);
-      } catch (error) {
-        console.error(error);
-        reject(error);
-      }
-    }, delay);
+      executeOperation().then(resolve).catch(reject);
+    }, delay || apiConfig.asyncDelay);
   });
 };
 
 export const api = {
+  config: apiConfig,
   login: (username, password) => {
     return simulateAsyncRequest(() => {
       if (

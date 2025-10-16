@@ -27,54 +27,62 @@
 </head>
 
 <body>
-  <div class="d-flex bg-light text-light">
+  <div class="d-flex bg-light text-light h-100">
     <!-- Sidebar -->
-    <aside id="sidebar" class="collapse d-lg-block bg-light text-light shadow">
+    <aside id="sidebar" class="collapse d-lg-flex flex-column bg-light text-light shadow">
       <div class="sidebar-header p-3 d-flex align-items-center">
         <a href="/admin-index.html" class="d-flex align-items-center text-decoration-none text-body">
           <img src="./assets/logo.png" alt="Logo" class="logo-img me-2" />
           <h5 class="m-0 text-primary fw-bold">Clínica IDW</h5>
         </a>
       </div>
-      <ul class="list-unstyled components p-2">
-        <li class="active">
+      <ul class="sidebar-components p-2 list-unstyled flex-grow-1">
+        <li class="active mt-2">
           <a href="#dashboard" class="nav-link px-3 py-2 d-flex align-items-center" data-section="dashboard-section">
             <i class="fa-solid fa-tachometer-alt me-2"></i><span>Dashboard</span>
           </a>
         </li>
-        <li>
+        <li class="mt-2">
           <a href="#medicos" class="nav-link px-3 py-2 d-flex align-items-center" data-section="medicos-section">
             <i class="fa-solid fa-user-doctor me-2"></i><span>Médicos</span>
           </a>
         </li>
-        <li>
+        <li class="mt-2">
           <a href="#especialidades" class="nav-link px-3 py-2 d-flex align-items-center"
             data-section="especialidades-section">
             <i class="fa-solid fa-stethoscope me-2"></i><span>Especialidades</span>
           </a>
         </li>
-        <li>
+        <li class="mt-2">
           <a href="#obras-sociales" class="nav-link px-3 py-2 d-flex align-items-center"
             data-section="obras-sociales-section">
             <i class="fa-solid fa-hand-holding-medical me-2"></i><span>Obras Sociales</span>
           </a>
         </li>
-        <li>
+        <li class="mt-2">
           <a href="#turnos" class="nav-link px-3 py-2 d-flex align-items-center" data-section="turnos-section">
             <i class="fa-solid fa-calendar-check me-2"></i><span>Turnos</span>
           </a>
         </li>
-        <li>
+        <li class="mt-2">
           <a href="#reservas" class="nav-link px-3 py-2 d-flex align-items-center" data-section="reservas-section">
             <i class="fa-solid fa-calendar-alt me-2"></i><span>Reservas</span>
           </a>
         </li>
       </ul>
+      <ul class="sidebar-footer list-unstyled  gap-2 p-3 d-flex flex-column  border-top border-1">
+        <a class="btn btn-sm order-1 align-self-start  text-danger" id="logout-btn" class="d-none" href="#">
+          <i class="fa-solid fa-right-from-bracket me-2"></i>
+          <span>
+            Cerrar Sesión
+          </span>
+        </a></li>
+      </ul>
     </aside>
     <div class="w-100 d-flex flex-column min-vh-100">
       <nav class="navbar navbar-expand-lg bg-light text-body shadow-sm">
         <div class="container-fluid">
-          <button type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" id="sidebarCollapse" class="btn d-lg-none btn-light text-body bg-transparent border-0">
+          <button type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" id="sidebarCollapse" class="btn  btn-light d-lg-none text-body bg-transparent border-0">
             <i class="fa-solid fa-bars"></i>
           </button>
           <div class="collapse navbar-collapse">
@@ -85,14 +93,8 @@
                   Sitio Público
                 </a>
               </li>
-
-              <li class="nav-item dropdown">
-                <a class="btn btn-sm  dropdown-toggle" href="#" role="button" id="user-dropdown"
-                  data-bs-toggle="dropdown">
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" id="logout-btn" class="d-none" href="#">Cerrar Sesión</a></li>
-                </ul>
+              <li class="nav-item mx-2">
+                <div id="user-info"></div>
               </li>
             </ul>
           </div>

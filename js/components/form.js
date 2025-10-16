@@ -58,23 +58,24 @@ export const renderForm = (fields, initialData = {}) => {
     if (field.required) input.required = true;
     if (field.disabled) input.disabled = true;
 
-    if (field.type === "file" && value) {
-      const previewContainer = document.createElement("div");
-      previewContainer.className = "mt-2";
-      previewContainer.innerHTML = `
-        <p class="form-text mb-1">Imagen actual:</p>
-        <img src="${value}" alt="Previsualización" class="img-thumbnail" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-      `;
-      input.insertAdjacentElement("afterend", previewContainer);
-    }
-
     if (field.attributes) {
       Object.entries(field.attributes).forEach(([key, value]) => {
         input.setAttribute(key, String(value));
       });
     }
-
+    let previewContainer = null
+    if (field.type === "file" && value) {
+       previewContainer = document.createElement("div");
+      previewContainer.className = "mt-2";
+      previewContainer.innerHTML = `
+        <p class="form-text mb-1">Imagen actual:</p>
+        <img src="${value}" alt="Previsualización" class="img-thumbnail" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+      `;
+    }
     formGroup.appendChild(input);
+    if (previewContainer) {
+      formGroup.appendChild(previewContainer);
+    }
 
     const invalidFeedback = document.createElement("div");
     invalidFeedback.className = "invalid-feedback";
@@ -95,6 +96,7 @@ export const getFormData = (form) => {
   formData.forEach((_, key) => keys.add(key));
 
   keys.forEach((key) => {
+    // para campos como checkboxes múltiples o selects múltiples
     const values = formData.getAll(key);
     // Si hay más de un valor, es un multiselect, guardamos el array.
     // Si no, guardamos el único valor.

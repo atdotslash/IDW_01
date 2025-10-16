@@ -146,6 +146,7 @@ function setupEventListeners() {
   window.addEventListener("popstate", (event) => {
     navigateToSection(event.state?.sectionId, { updateUrl: false });
   });
+  // Manejar cambios en la URL (hashchange)
   window.addEventListener("hashchange", () => {
     const sectionId = getSectionIdFromHash()
     navigateToSection(sectionId, { updateUrl: false });
@@ -155,9 +156,9 @@ function setupEventListeners() {
 function updateNavbar() {
   const session = storageService.session.getAdmin()
   const { username } = session.user
-  const userDropdown = document.getElementById("user-dropdown");
-  if (userDropdown) {
-    userDropdown.innerHTML = `<i class="fa-solid fa-user me-1"></i>${username}`;
+  const divUserInfo = document.getElementById("user-info");
+  if (divUserInfo) {
+    divUserInfo.innerHTML = `<i class="fa-solid fa-user me-1"></i>${username}`;
   }
   document.querySelector(UI_SELECTORS.LOGOUT_BUTTON)?.classList.toggle("d-none", false);
 }

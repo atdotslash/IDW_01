@@ -70,12 +70,12 @@ const handleLogin = (e) => {
     return ui.showError(MESSAGES.EMPTY_FIELDS)
   }
 
-  const { restore } = buttonState.disable(domElements.form.querySelector(UI_SELECTORS.submitButton));
+  const { restore: buttonRestore } = buttonState.disable(domElements.form.querySelector(UI_SELECTORS.submitButton));
 
   api.login(username, password).then(auth.redirectToAdmin).catch(error => {
     ui.showError(error.message);
   }).finally(() => {
-    restore?.();
+    buttonRestore?.();
   })
 
 };

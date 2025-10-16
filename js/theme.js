@@ -1,25 +1,29 @@
+import { PAGES } from "./shared/constants.js";
+
 class ThemeUI {
   static TOGGLE_BUTTON_ID = "themeToggle";
   static ICON_ELEMENT_ID = "themeIcon";
-  static LIGHT_ICON_CLASS = "fa fs-5 fa-moon";
-  static DARK_ICON_CLASS = "fa fs-5 fa-sun";
+  static LIGHT_ICON_CLASS = "fa fs-5  fa-moon";
+  static DARK_ICON_CLASS = "fa  fs-5  fa-sun";
   static EVENT_CLICK = "click";
   static ELEMENT_BUTTON = "button";
   static ELEMENT_ICON = "i";
   static ELEMENT_SPAN = "span";
   static ELEMENT_LIST_ITEM = "li";
   static TOGGLE_BUTTON_CLASSES =
-    "btn theme-toggle btn-link py-lg-2 py-3 bg-transparent border-0 text-muted d-flex align-items-center text-decoration-none p-2";
+    "btn theme-toggle  btn-sm  bg-transparent w-100 border-0 text-muted d-flex align-items-center text-decoration-none justify-content-start gap-2";
   static ATTRIBUTE_ARIA_LABEL = "aria-label";
   static ATTRIBUTE_TITLE = "title";
   static ATTRIBUTE_TYPE = "type";
   static LABEL_CHANGE_THEME = "Cambiar Tema";
   static TITLE_CHANGE_THEME = "Cambiar tema claro/oscuro";
-  static SPAN_CLASSES = "ms-2 d-lg-none";
+  static SPAN_CLASSES = "";
+  static SPAN_VISIBLE = true;
 
-  constructor({ containerSelector, wrapper, onClick }) {
+  constructor({ containerSelector, wrapper, onClick, showSpan = true }) {
     this.createToggle(containerSelector, wrapper);
     this.bindEvents(onClick);
+    this.showSpan = showSpan;
   }
 
   createToggle(containerSelector, wrapper) {
@@ -39,7 +43,7 @@ class ThemeUI {
               aria-label="${ThemeUI.LABEL_CHANGE_THEME}"
               title="${ThemeUI.TITLE_CHANGE_THEME}">
         <i id="${ThemeUI.ICON_ELEMENT_ID}"></i>
-        <span class="${ThemeUI.SPAN_CLASSES}">${ThemeUI.LABEL_CHANGE_THEME}</span>
+        <span class="${ThemeUI.SPAN_CLASSES}"></span>
       </button>
     `;
 
@@ -72,6 +76,19 @@ class ThemeUI {
           : ThemeUI.DARK_ICON_CLASS;
     }
   }
+
+  updateLabel(theme) {
+    if (this.themeToggleElement) {
+      const span = this.themeToggleElement.querySelector(ThemeUI.ELEMENT_SPAN)
+      if (span) {
+        span.textContent =
+          theme === ThemeManager.DEFAULT_THEME
+            ? "Modo Oscuro"
+            : "Modo Claro";
+        span.classList.toggle("d-none", !this.showSpan)
+      }
+    }
+  }
 }
 
 class ThemeManager {
@@ -80,14 +97,15 @@ class ThemeManager {
   static DARK_THEME = "dark";
   static DATA_THEME_ATTRIBUTE = "data-bs-theme";
 
-  constructor() {
+  constructor({ selector = ".navbar-nav", classes = "ms-lg-3", showText = true }) {
     this.currentTheme = this.getStoredTheme() || ThemeManager.DEFAULT_THEME;
     this.ui = new ThemeUI({
-      containerSelector: ".navbar-nav",
+      containerSelector: selector,
       wrapper: {
         tag: "li",
-        classes: "ms-lg-3",
+        classes,
       },
+      showSpan: showText,
       onClick: this.toggleTheme.bind(this),
     });
     this.applyTheme(this.currentTheme);
@@ -113,9 +131,17 @@ class ThemeManager {
     localStorage.setItem(ThemeManager.KEY_THEME, theme);
     this.currentTheme = theme;
     this.ui.updateIcon(theme);
+    this.ui.updateLabel(theme);
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  new ThemeManager();
+
+  const themeAdminConfig = {
+    selector: ".sidebar-footer", classes: " w-100 order-0", showText: true
+  }
+  const isAdminPage = window.location.pathname.includes(PAGES.ADMIN)
+  new ThemeManager(isAdminPage ? themeAdminConfig : {
+    classes: "ms-lg-3 mt-1", showText: false
+  });
 });

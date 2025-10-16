@@ -1,7 +1,3 @@
-/**
- * @file Módulo principal de almacenamiento (Facade).
- * @description Expone una API funcional y cohesiva para la gestión de datos de la aplicación.
- */
 import { removeData, saveData, getData } from "./utils.js";
 import {
   DB_KEY,
