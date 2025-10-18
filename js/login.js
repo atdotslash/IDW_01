@@ -1,7 +1,7 @@
 
 
 import { api } from './api.js';
-import { buttonState } from './shared/ui.js'
+import { disableButton } from './shared/ui.js'
 import { MESSAGES, PAGES } from './shared/constants.js';
 import { auth } from './shared/auth.js';
 
@@ -70,12 +70,12 @@ const handleLogin = (e) => {
     return ui.showError(MESSAGES.EMPTY_FIELDS)
   }
 
-  const { restore: buttonRestore } = buttonState.disable(domElements.form.querySelector(UI_SELECTORS.submitButton));
+  const { restore: buttonRestore } = disableButton(domElements.form.querySelector(UI_SELECTORS.submitButton));
 
   api.login(username, password).then(auth.redirectToAdmin).catch(error => {
     ui.showError(error.message);
   }).finally(() => {
-    buttonRestore?.();
+    buttonRestore();
   })
 
 };

@@ -6,7 +6,7 @@ import { showSpinner } from "../components/spinner.js";
 import { MESSAGES } from "../shared/constants.js";
 import { formatCurrency, fullName } from "../shared/formatters.js";
 import { readFileAsDataURL } from "../shared/file-reader.js";
-import { buttonState } from "../shared/ui.js";
+import { disableButton } from "../shared/ui.js";
 import { createCrudView } from "./crud.js";
 
 const SELECTORS = {
@@ -166,7 +166,7 @@ async function handleDoctorFormSubmit({
   } else {
     delete formData.foto;
   }
-  const { restore } = buttonState.disable(event.target, "Guardando...");
+  const { restore } = disable(event.target, "Guardando...");
 
   action({ id: doctorId, data: formData })
     .then((data) => {
@@ -181,9 +181,7 @@ async function handleDoctorFormSubmit({
       console.error(error);
       notification.error(MESSAGES.ENTITY_OPERATION_ERROR("médico", "guardar"));
     })
-    .finally(() => {
-      restore?.();
-    });
+    .finally(() => restore);
 }
 
 async function openDoctorModal(doctor) {
@@ -306,7 +304,7 @@ function handleDeleteDoctor(doctorId) {
         text: "Eliminar",
         className: "btn btn-danger",
         onClick: (event, modal) => {
-          const {restore:buttonRestore} = buttonState.disable(event.target, "Eliminando...");
+          const {restore:buttonRestore} = disableButton(event.target, "Eliminando...");
           api
             .deleteDoctor({ id: doctorId })
             .then(() => {
@@ -319,7 +317,7 @@ function handleDeleteDoctor(doctorId) {
               notification.error(
                 MESSAGES.ENTITY_DELETE_ERROR("médico")
               );
-              buttonRestore?.();
+              buttonRestore();
             });
         },
       },

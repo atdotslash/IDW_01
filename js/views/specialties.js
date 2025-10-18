@@ -3,7 +3,7 @@ import { getFormData, renderForm } from "../components/form.js";
 import { createReusableModal } from "../components/modal.js";
 import notification from "../components/notifications.js";
 import { showSpinner } from "../components/spinner.js";
-import { buttonState } from "../shared/ui.js";
+import { disableButton } from "../shared/ui.js";
 import { createCrudView } from "./crud.js";
 import { MESSAGES } from "../shared/constants.js";
 
@@ -44,7 +44,7 @@ function handleFormSubmit({ event, form, modal, action, specialtyId }) {
   }
 
   const formData = getFormData(form);
-  const {restore: saveButtonRestore} = buttonState.disable(event.currentTarget, "Guardando...");
+  const {restore: saveButtonRestore} = disableButton(event.currentTarget, "Guardando...");
 
   action({ id: specialtyId, data: formData })
     .then((data) => {
@@ -63,7 +63,7 @@ function handleFormSubmit({ event, form, modal, action, specialtyId }) {
       notification.error(`Error al ${modalTitle}`);
     })
     .finally(() => {
-      saveButtonRestore?.();
+      saveButtonRestore();
       modal.hide();
     });
 }
@@ -152,7 +152,7 @@ function handleDeleteSpecialty(specialtyId) {
         text: "Eliminar",
         className: "btn btn-danger",
         onClick: (event, modal) => {
-          const { restore: restoreButton } = buttonState.disable(event.target, "Eliminando...");
+          const { restore: restoreButton } = disableButton(event.target, "Eliminando...");
           api
             .deleteSpecialty(specialtyId)
             .then(() => {
@@ -166,7 +166,7 @@ function handleDeleteSpecialty(specialtyId) {
               );
             })
             .finally(() => {
-              restoreButton?.();
+              restoreButton();
               modal.hide();
             });
         },
@@ -238,4 +238,3 @@ export const renderSpecialties = createCrudView({
   handleTableClick,
   onAddButtonClick: () => openSpecialtyModal(),
 });
-
