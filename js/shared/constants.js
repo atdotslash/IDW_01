@@ -13,3 +13,8 @@ export const PAGES = {
     ADMIN: "admin-index.html",
     LOGIN: "login.html",
 };
+
+export const CURRENCY_CONFIG = {
+  LOCALE: 'es-AR',
+  CURRENCY: 'ARS'
+}

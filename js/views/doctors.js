@@ -4,7 +4,7 @@ import { createReusableModal, MODAL_SIZES } from "../components/modal.js";
 import notification from "../components/notifications.js";
 import { showSpinner } from "../components/spinner.js";
 import { MESSAGES } from "../shared/constants.js";
-import { formatCurrency } from "../shared/currency.js";
+import { formatCurrency, fullName } from "../shared/formatters.js";
 import { readFileAsDataURL } from "../shared/file-reader.js";
 import { buttonState } from "../shared/ui.js";
 import { createCrudView } from "./crud.js";
@@ -20,9 +20,7 @@ let state = {
   insuranceCompanies: [],
 };
 
-function fullName(doctor) {
-  return `${doctor.apellido}, ${doctor.nombre}`
-} 
+
 
 
 async function handleShowDoctor(doctorId) {
@@ -200,7 +198,7 @@ async function openDoctorModal(doctor) {
     id: modalId,
     title,
     size: MODAL_SIZES.LARGE,
-    body: renderForm([]), 
+    body: renderForm([]),
     footerButtons: [
       {
         text: "Cerrar",
@@ -217,7 +215,7 @@ async function openDoctorModal(doctor) {
   });
 
   try {
-   
+
     const doctorData = isEditing ? await api.getDoctorById(doctor.id) : {};
     removeSpinner();
 
