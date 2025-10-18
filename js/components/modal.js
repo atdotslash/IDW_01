@@ -1,86 +1,92 @@
-
+const MODAL_TEMPLATE_ID = 'app-modal-template';
 
 export const MODAL_SIZES = {
-  SMALL: "modal-sm",
-  LARGE: "modal-lg",
-  EXTRA_LARGE: "modal-xl",
-  DEFAULT: ""
+	SMALL: "modal-sm",
+	LARGE: "modal-lg",
+	EXTRA_LARGE: "modal-xl",
+};
+
+function createFooterButton({ className, id, disabled, text }) {
+	const button = document.createElement("button");
+	button.type = "button";
+	button.className = className;
+	button.id = id;
+	button.disabled = disabled;
+	button.textContent = text;
+	return button;
 }
 
+export function createReusableModal({
+	id = "modal-app",
+	size = "",
+	title,
+	body,
+	footerButtons = [],
+	onHide = null,
+}) {
+	const template = document.getElementById(MODAL_TEMPLATE_ID);
+	const modalElement = template.content.firstElementChild.cloneNode(true);
 
-export function createReusableModal({ id = "modal-app", size = MODAL_SIZES.DEFAULT, title, body, footerButtons = [], onHide = null }) {
+	modalElement.id = id;
+	modalElement.querySelector(".modal-title").textContent = title;
+	if (size) {
+		modalElement.querySelector(".modal-dialog").classList.add(size);
+	}
 
+	const modalBody = modalElement.querySelector(".modal-body");
+	if (typeof body === "string") {
+		modalBody.innerHTML = body;
+	} else if (body instanceof Node) {
+		modalBody.appendChild(body);
+	}
 
-  const footerHTML = footerButtons.length
-    ? `<div class="modal-footer">${footerButtons
-      .map(
-        (btn, index) =>
-          `<button type="button" ${btn.disabled ? 'disabled' : ''} class="${btn.className}" id="${id}-btn-${index}">${btn.text}</button>`
-      )
-      .join('')}</div>`
-    : '';
+	if (!window.bootstrap || !window.bootstrap.Modal) {
+		throw new Error(
+			"Bootstrap Modal no esta disponible. Asegúrese de cargar Bootstrap JS.",
+		);
+	}
 
-  const modalElement = document.createElement('div');
-  modalElement.id = id;
-  modalElement.className = "modal fade";
-  modalElement.tabIndex = -1;
-  modalElement.ariaLabelledby = `${id}Label`;
-  modalElement.ariaHidden = true;
-  modalElement.innerHTML = `
-      <div class="modal-dialog modal-dialog-centered ${size}">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="${id}Label">${title}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-          </div>
-          ${footerHTML}
-        </div>
-     </div>
-  `;
+	const modalInstance = new window.bootstrap.Modal(modalElement, {
+		backdrop: "static",
+	});
+	const buttonHandlers = [];
+	if (footerButtons.length > 0) {
+		const modalFooter = modalElement.querySelector(".modal-footer");
+		footerButtons.forEach((btnConfig) => {
+			const buttonElement = createFooterButton(btnConfig);
+			const handler = (event) => btnConfig?.onClick?.(event, modalInstance);
+			buttonHandlers.push({ element: buttonElement, handler });
+			buttonElement.addEventListener("click", handler);
+			modalFooter.appendChild(buttonElement);
+		});
+	}
 
-  const modalBody = modalElement.querySelector('.modal-body');
-  if (typeof body === 'string') {
-    modalBody.innerHTML = body;
-  } else {
-    modalBody.appendChild(body);
-  }
+	document.body.appendChild(modalElement);
 
-  const modalInstance = new bootstrap.Modal(modalElement, {
-    backdrop: 'static',
-  });
-  footerButtons.forEach((btn, index) => {
-    const buttonElement = modalElement.querySelector(`#${id}-btn-${index}`);
-      buttonElement?.addEventListener('click', (event) => btn?.onClick && btn.onClick(event, modalInstance));
-  });
+	const destroy = () => {
+		if (typeof onHide === "function") {
+			onHide();
+		}
+		buttonHandlers.forEach(({ handler, element }) => {
+			element?.removeEventListener("click", handler);
+		});
+		modalElement.removeEventListener("shown.bs.modal", handleShown);
+		modalInstance.dispose();
+		modalElement.remove();
+	};
 
-  document.body.appendChild(modalElement);
+	function handleShown() {
+		const firstInput = modalElement.querySelector("input, select, textarea");
+		firstInput?.focus({ preventScroll: true });
+	}
 
- 
-
-  const destroy = () => {
-    if (typeof onHide === "function") {
-      onHide()
-    }
-    modalElement.removeEventListener("shown.bs.modal", handleShown)
-    modalInstance.dispose();
-    modalElement.remove();
-  };
-
-
-  function handleShown() {
-    const firstInput = modalElement.querySelector('input, select, textarea');
-    firstInput?.focus({ preventScroll: true });
-  }
-
-  modalElement.addEventListener('shown.bs.modal', handleShown);
-  modalElement.addEventListener('hidden.bs.modal', destroy);
-  modalInstance.show()
-  return {
-    show: () => modalInstance.show(),
-    hide: () => modalInstance.hide(),
-    destroy,
-    getElement: () => modalElement,
-  };
+	modalElement.addEventListener("shown.bs.modal", handleShown);
+	modalElement.addEventListener("hidden.bs.modal", destroy);
+	modalInstance.show();
+	return {
+		show: () => modalInstance.show(),
+		hide: () => modalInstance.hide(),
+		destroy,
+		getElement: () => modalElement,
+	};
 }
