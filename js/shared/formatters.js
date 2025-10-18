@@ -1,4 +1,4 @@
-import { CURRENCY_CONFIG } from "./constants";
+import { CURRENCY_CONFIG } from "./constants.js";
 
 export function formatCurrency(amount) {
     return new Intl.NumberFormat(CURRENCY_CONFIG.LOCALE, {

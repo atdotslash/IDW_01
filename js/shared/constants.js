@@ -1,4 +1,3 @@
-
 export const MESSAGES = {
     EMPTY_FIELDS: 'Por favor, complete todos los campos',
     ENTITY_OPERATION_SUCCESS : (entityName, operation) =>`${entityName} fue ${operation} con éxito.`,
