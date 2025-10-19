@@ -51,8 +51,8 @@ const ui = {
 		domElements.errorContainer?.classList.add("d-none");
 	},
 	getCredentials: () => {
-		const username = domElements.inputs.pass.value.trim();
-		const password = domElements.inputs.user.value;
+		const username = domElements.inputs.user.value.trim();
+		const password = domElements.inputs.pass.value;
 		return { username, password };
 	},
 };
@@ -77,9 +77,7 @@ const handleLogin = (event) => {
 		.catch((error) => {
 			ui.showError(error.message);
 		})
-		.finally(() =>
-			buttonRestore
-		);
+		.finally(buttonRestore);
 };
 
 function initLogin() {
