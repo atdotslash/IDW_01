@@ -95,18 +95,26 @@ const createLabel = ({ name, label }) => {
 };
 
 const createFormGroup = (props, initialData) => {
-	const { name, type, validationMessage } = props;
+	const { name, type, validationMessage, col } = props;
 	const value = initialData?.[name] ?? props.value ?? "";
-	const formGroup = document.createElement("div");
-	formGroup.className = "mb-3";
-	formGroup.appendChild(createLabel(props));
-	const input = createInputElement(props, value);
-	formGroup.appendChild(input);
+
+	const fieldWrapper = document.createElement("div");
+	fieldWrapper.className = "mb-3";
+
+	fieldWrapper.appendChild(createLabel(props));
+	fieldWrapper.appendChild(createInputElement(props, value));
 	if (type === "file" && value) {
-		formGroup.appendChild(createPreview(value));
+		fieldWrapper.appendChild(createPreview(value));
 	}
-	formGroup.appendChild(createInvalidFeedback(validationMessage));
-	return formGroup;
+	fieldWrapper.appendChild(createInvalidFeedback(validationMessage));
+
+	if (col) {
+		const colWrapper = document.createElement("div");
+		colWrapper.className = col;
+		colWrapper.appendChild(fieldWrapper);
+		return colWrapper;
+	}
+	return fieldWrapper;
 };
 
 export const renderForm = (fields, initialData = {}) => {
@@ -114,9 +122,23 @@ export const renderForm = (fields, initialData = {}) => {
 	form.id = "entity-form";
 	form.noValidate = true;
 
-	fields.forEach((props) => {
-		const formGroup = createFormGroup(props, initialData);
-		form.appendChild(formGroup);
+	fields.forEach((fieldOrRow) => {
+		// Si el elemento es un array, lo tratamos como una fila.
+		if (Array.isArray(fieldOrRow)) {
+			const row = document.createElement("div");
+			row.className = "row";
+			fieldOrRow.forEach((fieldProps) => {
+				// Asignamos un tamaño de columna por defecto si no se especifica.
+				const propsWithDefaultCol = { col: "col", ...fieldProps };
+				const formGroup = createFormGroup(propsWithDefaultCol, initialData);
+				row.appendChild(formGroup);
+			});
+			form.appendChild(row);
+		} else {
+			// Si es un objeto, lo renderizamos como un campo normal.
+			const formGroup = createFormGroup(fieldOrRow, initialData);
+			form.appendChild(formGroup);
+		}
 	});
 	return form;
 };

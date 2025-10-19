@@ -219,39 +219,43 @@ async function openDoctorModal(doctor) {
 
     const form = renderForm(
       [
-        { name: "nombre", label: "Nombre", type: "text", required: true },
-        { name: "apellido", label: "Apellido", type: "text", required: true },
-        {
-          name: "matriculaProfesional",
-          label: "Matrícula",
-          type: "number",
-          required: true,
-        },
-        {
-          name: "especialidadId",
-          label: "Especialidad",
-          type: "select",
-          required: true,
-          options: state.specialties.map((s) => ({
-            value: s.id,
-            text: s.nombre,
-          })),
-        },
-        {
-          name: "valorConsulta",
-          label: "Valor Consulta ($)",
-          type: "number",
-          required: true,
-          attributes: { step: "0.01" },
-        },
-        {
-          name: "foto",
-          label: "Foto",
-          type: "file",
-          required: !isEditing,
-          attributes: { accept: "image/*" },
-        },
-        { name: "descripcion", label: "Descripción", type: "textarea" },
+        [
+          { name: "nombre", label: "Nombre", type: "text", required: true, col: 'col-md-6' },
+          { name: "apellido", label: "Apellido", type: "text", required: true, col: 'col-md-6' },
+        ],
+        [
+          { name: "matriculaProfesional", label: "Matrícula", type: "number", required: true, col: "col-md-6" },
+          {
+            name: "especialidadId",
+            label: "Especialidad",
+            type: "select",
+            required: true,
+            col: "col-md-6",
+            options: state.specialties.map((s) => ({
+              value: s.id,
+              text: s.nombre,
+            })),
+          },
+        ],
+        [
+          {
+            name: "valorConsulta",
+            label: "Valor Consulta ($)",
+            type: "number",
+            required: true,
+            attributes: { step: "0.01" },
+            col: "col-md-6"
+          },
+          {
+            name: "foto",
+            label: "Foto",
+            type: "file",
+            required: !isEditing,
+            attributes: { accept: "image/*" },
+            col: "col-md-6"
+          },
+        ],
+        { name: "descripción", label: "Descripción", type: "textarea" },
         {
           name: "obraSocialIds",
           label: "Obras Sociales",
