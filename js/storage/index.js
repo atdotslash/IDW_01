@@ -50,13 +50,13 @@ const storageService = {
   specialties: {
     ...specialties,
     remove: deleteSpecialty,
-    create: createSpecialty,
+    add: createSpecialty,
   },
   insuranceCompanies,
   doctors: {
     ...doctors,
     remove: deleteDoctor,
-    create: createDoctor,
+    add: createDoctor,
   },
   appointments,
   reservations,
