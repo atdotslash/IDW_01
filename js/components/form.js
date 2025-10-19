@@ -1,12 +1,3 @@
-/**
- * Sets common attributes for a form element.
- *
- * @param {HTMLElement} element - The element to set the attributes on.
- * @param {Object} props - The props object containing the attributes.
- * @param {string} props.name - The name attribute.
- * @param {boolean} [props.required] - Whether the element is required.
- * @param {boolean} [props.disabled] - Whether the element is disabled.
- */
 const getCommonAttributes = (props) => {
 	const attributes = {
 		name: props.name,
@@ -111,7 +102,7 @@ const createFormGroup = (props, initialData) => {
 	formGroup.appendChild(createLabel(props));
 	const input = createInputElement(props, value);
 	formGroup.appendChild(input);
-	if (type === "file") {
+	if (type === "file" && value) {
 		formGroup.appendChild(createPreview(value));
 	}
 	formGroup.appendChild(createInvalidFeedback(validationMessage));

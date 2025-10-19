@@ -166,7 +166,7 @@ async function handleDoctorFormSubmit({
   } else {
     delete formData.foto;
   }
-  const { restore } = disable(event.target, "Guardando...");
+  const { restore } = disableButton(event.target, "Guardando...");
 
   action({ id: doctorId, data: formData })
     .then((data) => {
