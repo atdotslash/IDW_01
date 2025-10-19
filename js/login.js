@@ -81,7 +81,7 @@ const handleLogin = (event) => {
 };
 
 function initLogin() {
-	auth.checkAndRedirect({ redirectTo: PAGES.ADMIN, redirectIf: true });
+	auth.guestOnly();
 	if (!ui.init()) return;
 
 	domElements.form.addEventListener("submit", handleLogin);

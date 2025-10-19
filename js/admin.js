@@ -165,7 +165,7 @@ function updateNavbar() {
 
 
 function initAdminApp() {
-  if (!auth.checkAndRedirect({ redirectTo: PAGES.LOGIN, redirectIf: false })) {
+  if (!auth.gatekeep()) {
     return;
   }
   storageService.initialize();
