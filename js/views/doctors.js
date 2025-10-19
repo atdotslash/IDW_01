@@ -2,7 +2,7 @@ import { api } from "../api.js";
 import { getFormData, renderForm } from "../components/form.js";
 import { createReusableModal, MODAL_SIZES } from "../components/modal.js";
 import notification from "../components/notifications.js";
-import { showSpinner } from "../components/spinner.js";
+import { replaceContentWithSpinner } from "../components/spinner.js";
 import { MESSAGES } from "../shared/constants.js";
 import { formatCurrency, fullName } from "../shared/formatters.js";
 import { readFileAsDataURL } from "../shared/file-reader.js";
@@ -38,7 +38,7 @@ async function handleShowDoctor(doctorId) {
     ],
   });
 
-  const removeSpinner = showSpinner(
+  const {hide:removeSpinner} = replaceContentWithSpinner(
     modal.getElement().querySelector(".modal-body"),
     {
       text: "Cargando informacion...",
@@ -208,7 +208,7 @@ async function openDoctorModal(doctor) {
   });
 
   const modalBody = modal.getElement().querySelector(".modal-body");
-  const removeSpinner = showSpinner(modalBody, {
+  const { hide: removeSpinner } = replaceContentWithSpinner(modalBody, {
     text: "Cargando formulario...",
   });
 

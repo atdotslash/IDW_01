@@ -2,7 +2,7 @@ import { api } from "../api.js";
 import { getFormData, renderForm } from "../components/form.js";
 import { createReusableModal } from "../components/modal.js";
 import notification from "../components/notifications.js";
-import { showSpinner } from "../components/spinner.js";
+import { replaceContentWithSpinner } from "../components/spinner.js";
 import { disableButton } from "../shared/ui.js";
 import { createCrudView } from "./crud.js";
 import { MESSAGES } from "../shared/constants.js";
@@ -92,7 +92,7 @@ async function openSpecialtyModal(specialty) {
       },
     ],
   });
-  const removeSpinner = showSpinner(
+  const {hide:removeSpinner} = replaceContentWithSpinner(
     modal.getElement().querySelector(".modal-body"),
     { text: "Cargando..." }
   );

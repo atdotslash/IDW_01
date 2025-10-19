@@ -1,4 +1,4 @@
-import { showSpinner } from "../components/spinner.js";
+import { replaceContentWithSpinner } from "../components/spinner.js";
 import { MESSAGES } from "../shared/constants.js";
 
 
@@ -91,23 +91,23 @@ export function createCrudView(config) {
       ?.addEventListener("click", onAddButtonClick);
 
     const tableContainer = container.querySelector(`#${tableId}`);
-    const removeSpinner = showSpinner(tableContainer, {
-      text: `Cargando ${entityNamePlural.toLowerCase()}...`,
-    });
+    const { hide: removeSpinner } = replaceContentWithSpinner(
+					tableContainer,
+					{
+						text: `Cargando ${entityNamePlural.toLowerCase()}...`,
+					},
+				);
 
-    fetchData().then((data) => {
-      renderTable(data, tableContainer);
-    }).catch((error) => {
-      const message = MESSAGES.ENTITY_LOAD_ERROR(entityNamePlural);
-      console.error(
-        `Error: ${message}:`,
-        error
-      );
-      tableContainer.innerHTML =
-        `<div class="alert alert-danger">${message}</div>`;
-    }).finally(() => {
-      removeSpinner();
-    });
+				fetchData()
+					.then((data) => {
+						renderTable(data, tableContainer);
+					})
+					.catch((error) => {
+						const message = MESSAGES.ENTITY_LOAD_ERROR(entityNamePlural);
+						console.error(`Error: ${message}:`, error);
+						tableContainer.innerHTML = `<div class="alert alert-danger">${message}</div>`;
+					})
+					.finally(removeSpinner);
     return {
       checkEmptyState: () => checkAndUpdateEmptyState(tableContainer)
     };
