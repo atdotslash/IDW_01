@@ -52,9 +52,10 @@ export function createReusableModal({
 	const buttonHandlers = [];
 	if (footerButtons.length > 0) {
 		const modalFooter = modalElement.querySelector(".modal-footer");
-		footerButtons.forEach((btnConfig) => {
-			const buttonElement = createFooterButton(btnConfig);
-			const handler = (event) => btnConfig?.onClick?.(event, modalInstance);
+		footerButtons.forEach((props, index) => {
+			props.id = `${id}-footer-button-${index}`;			
+			const buttonElement = createFooterButton(props);
+			const handler = (event) => props?.onClick?.(event, modalInstance);
 			buttonHandlers.push({ element: buttonElement, handler });
 			buttonElement.addEventListener("click", handler);
 			modalFooter.appendChild(buttonElement);
