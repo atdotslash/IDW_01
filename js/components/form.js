@@ -1,107 +1,141 @@
+/**
+ * Sets common attributes for a form element.
+ *
+ * @param {HTMLElement} element - The element to set the attributes on.
+ * @param {Object} props - The props object containing the attributes.
+ * @param {string} props.name - The name attribute.
+ * @param {boolean} [props.required] - Whether the element is required.
+ * @param {boolean} [props.disabled] - Whether the element is disabled.
+ */
+const getCommonAttributes = (props) => {
+	const attributes = {
+		name: props.name,
+		id: props.name,
+		className: "form-control",
+	}
+	if (props.required) {
+		attributes.required = true;
+	}
+	if (props.disabled) {
+		attributes.disabled = true;
+	}
+	return attributes;
+}
+
+
+const applyAttributes = (element, attributes = {}) => {
+	Object.assign(element, attributes);
+};
+
+export const createTextArea = (props, value) => {
+	const textarea = document.createElement("textarea");
+	applyAttributes(textarea, getCommonAttributes(props));
+	textarea.rows = props?.rows || 3;
+	textarea.textContent = value;
+	return textarea;
+};
+
+export const createSelect = (props, value) => {
+	const select = document.createElement("select");
+	applyAttributes(select, getCommonAttributes(props));
+	if (props.multiple) {
+		select.multiple = true;
+		select.size = Math.min(props.options?.length || 5, 5);
+	}
+	props.options?.forEach((opt) => {
+		const option = document.createElement("option");
+		option.value = String(opt.value);
+		option.textContent = opt.text;
+		const isSelected = props.multiple
+			? Array.isArray(value) && value.map(String).includes(String(opt.value))
+			: String(opt.value) === String(value);
+		if (isSelected) {
+			option.selected = true;
+		}
+		select.appendChild(option);
+	});
+	return select;
+};
+const createDefaultInput = (props, value) => {
+	const input = document.createElement("input");
+	applyAttributes(input, getCommonAttributes(props));
+	input.type = props.type;
+	if (props.type !== "file") {
+		input.value = value;
+	}
+	return input;
+};
+
+const inputFactory = {
+	textarea: createTextArea,
+	default: createDefaultInput,
+	select: createSelect,
+};
+
+const createInputElement = (props, value) => {
+	const createFunction = inputFactory[props.type] ?? inputFactory.default;
+	return createFunction(props, value);
+};
+
+const createPreview = (value) => {
+	const previewContainer = document.createElement("div");
+	previewContainer.className = "mt-2";
+	previewContainer.innerHTML = `
+       <p class="form-text mb-1">Imagen actual:</p>
+       <img src="${value}" alt="Previsualización" class="img-thumbnail object-fit-cover" style="max-width: 100px;
+ max-height: 100px;">
+     `;
+	return previewContainer;
+};
+
+const createInvalidFeedback = (validationMessage) => {
+	const invalidFeedback = document.createElement("div");
+	invalidFeedback.className = "invalid-feedback";
+	invalidFeedback.textContent = validationMessage || "Este campo es requerido.";
+	return invalidFeedback;
+};
+
+const createLabel = ({ name, label }) => {
+	const labelEl = document.createElement("label");
+	labelEl.htmlFor = name;
+	labelEl.className = "form-label";
+	labelEl.textContent = label;
+	return labelEl;
+};
+
+const createFormGroup = (props, initialData) => {
+	const { name, type, validationMessage } = props;
+	const value = initialData?.[name] ?? props.value ?? "";
+	const formGroup = document.createElement("div");
+	formGroup.className = "mb-3";
+	formGroup.appendChild(createLabel(props));
+	const input = createInputElement(props, value);
+	formGroup.appendChild(input);
+	if (type === "file") {
+		formGroup.appendChild(createPreview(value));
+	}
+	formGroup.appendChild(createInvalidFeedback(validationMessage));
+	return formGroup;
+};
+
 export const renderForm = (fields, initialData = {}) => {
+	const form = document.createElement("form");
+	form.id = "entity-form";
+	form.noValidate = true;
 
-  const form = document.createElement("form");
-  form.id = "entity-form";
-  form.noValidate = true;
-
-  fields.forEach((field) => {
-    const value = initialData?.[field.name] ?? field.value ?? "";
-    const formGroup = document.createElement("div");
-    formGroup.className = "mb-3";
-
-    const label = document.createElement("label");
-    label.htmlFor = field.name;
-    label.className = "form-label";
-    label.textContent = field.label;
-    formGroup.appendChild(label);
-
-    let input;
-
-    if (field.type === "textarea") {
-      const textarea = document.createElement("textarea");
-      textarea.rows = 3;
-      textarea.textContent = value;
-      input = textarea;
-    } else if (field.type === "select") {
-      const select = document.createElement("select");
-      if (field.multiple) {
-        select.multiple = true;
-        select.size = Math.min(field.options?.length || 5, 5);
-      }
-      if (field.options) {
-        field.options.forEach((opt) => {
-          const option = document.createElement("option");
-          option.value = String(opt.value);
-          option.textContent = opt.text;
-          if (field.multiple && Array.isArray(value)) {
-            if (value.map(String).includes(String(opt.value))) {
-              option.selected = true;
-            }
-          } else if (String(opt.value) === String(value)) {
-            option.selected = true;
-          }
-          select.appendChild(option);
-        });
-      }
-      input = select;
-    } else {
-      const inputEl = document.createElement("input");
-      inputEl.type = field.type;
-      if (field.type !== "file") {
-        inputEl.value = value;
-      }
-      input = inputEl;
-    }
-    input.id = field.name;
-    input.className = "form-control";
-    input.name = field.name;
-    if (field.required) input.required = true;
-    if (field.disabled) input.disabled = true;
-
-    if (field.attributes) {
-      Object.entries(field.attributes).forEach(([key, value]) => {
-        input.setAttribute(key, String(value));
-      });
-    }
-    let previewContainer = null
-    if (field.type === "file" && value) {
-       previewContainer = document.createElement("div");
-      previewContainer.className = "mt-2";
-      previewContainer.innerHTML = `
-        <p class="form-text mb-1">Imagen actual:</p>
-        <img src="${value}" alt="Previsualización" class="img-thumbnail" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-      `;
-    }
-    formGroup.appendChild(input);
-    if (previewContainer) {
-      formGroup.appendChild(previewContainer);
-    }
-
-    const invalidFeedback = document.createElement("div");
-    invalidFeedback.className = "invalid-feedback";
-    invalidFeedback.textContent =
-      field.validationMessage || "Este campo es requerido.";
-    formGroup.appendChild(invalidFeedback);
-
-    form.appendChild(formGroup);
-  });
-
-  return form;
+	fields.forEach((props) => {
+		const formGroup = createFormGroup(props, initialData);
+		form.appendChild(formGroup);
+	});
+	return form;
 };
 
 export const getFormData = (form) => {
-  const formData = new FormData(form);
-  const data = {};
-  const keys = new Set();
-  formData.forEach((_, key) => keys.add(key));
-
-  keys.forEach((key) => {
-    // para campos como checkboxes múltiples o selects múltiples
-    const values = formData.getAll(key);
-    // Si hay más de un valor, es un multiselect, guardamos el array.
-    // Si no, guardamos el único valor.
-    data[key] = values.length > 1 ? values : values[0];
-  });
-
-  return data;
+	const formData = new FormData(form);
+	return Object.fromEntries(
+		[...new Set(formData.keys())].map((key) => {
+			const values = formData.getAll(key);
+			return [key, values.length > 1 ? values : values[0]];
+		}),
+	);
 };
