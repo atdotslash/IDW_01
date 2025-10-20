@@ -2,7 +2,7 @@ const getCommonAttributes = (props) => {
 	const attributes = {
 		name: props.name,
 		id: props.name,
-		className: "form-control",
+		className: props.className || "form-control",
 	}
 	if (props.required) {
 		attributes.required = true;
@@ -28,7 +28,7 @@ export const createTextArea = (props, value) => {
 
 export const createSelect = (props, value) => {
 	const select = document.createElement("select");
-	applyAttributes(select, getCommonAttributes(props));
+	applyAttributes(select, getCommonAttributes({className: "form-select", ...props, }));
 	if (props.multiple) {
 		select.multiple = true;
 		select.size = Math.min(props.options?.length || 5, 5);
