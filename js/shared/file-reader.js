@@ -1,5 +1,5 @@
 export function readFileAsDataURL(file) {
-    if (!file instanceof Blob) {
+    if (!(file instanceof Blob)) {
         return Promise.reject(new Error('El argumento proporcionado no es un archivo válido.'));
     }
     return new Promise((resolve, reject) => {
