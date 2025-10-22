@@ -54,10 +54,6 @@ const adminState = {
 				"appointments",
 				{ id: "turnos-section", name: "turnos", component: initAppointments },
 			],
-			[
-				"calendar",
-				{ id: "calendario-section", name: "calendario", component: initCalendar },
-			],
 		]),
 	},
 };
