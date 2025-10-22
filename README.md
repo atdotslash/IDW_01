@@ -58,14 +58,21 @@ El proyecto fue desarrollado utilizando las siguientes tecnologías principales:
 - Bootstrap
 
 ## 💻 Demostración
+
 Puedes ver la aplicación en funcionamiento en el siguiente enlace:
 
-[Demo en Vivo](<URL_DEL_PROYECTO_DEMO>)
+[Demo en Vivo](https://atdotslash.github.io/IDW_01/)
 
+### 🔐 Usuario y Contraseña por Defecto
+ Para ingresar en el panel de administración utilizar estas credenciales
+
+*   **Usuario:** `admin`
+*   **Contraseña:** `1234`
+
+**Nota:** Estas credenciales son solo para fines de desarrollo y no deben usarse en un entorno de producción.
 
 ## 📸 Capturas de Pantalla
 Próximamente capturas de pantalla y diseño de la aplicación para mostrar su apariencia y funcionalidad.
-
 
 
 ## 🚀 Cómo Ejecutar el Proyecto
@@ -85,6 +92,7 @@ cd IDW_01
 3.  Abre el archivo `index.html` directamente en tu navegador web preferido (Chrome, Firefox, Edge, etc.).
 
 Alternativamente, puedes usar una extensión como "Live Server" en Visual Studio Code para servir el archivo.
+
 
 
 
