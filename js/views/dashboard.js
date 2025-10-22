@@ -1,10 +1,12 @@
 import storageService from "../storage/index.js";
-
+import * as ui from "../core/ui.js";
+import * as tpl from "../core/templates.js";
 const SELECTORS = {
 	DOCTORS: "totalMedicos",
 	SPECIALTIES: "totalEspecialidades",
 	INSURANCE_COMPANIES: "totalObrasSociales",
 	RESERVATIONS: "totalReservas",
+	CARDS: "dashboard-cards",
 };
 
 const calculateDashboardStats = () => {
@@ -16,23 +18,17 @@ const calculateDashboardStats = () => {
 	};
 };
 
-function createStatCard({ title, iconClass, value, href, selectorId }) {
-	return `
-           <div class="col-md-6 col-xl-3">
-             <div data-href="${href}" class="card stat shadow h-100 text-center">
-               <div class="card-body">
-                 <i class="fa-solid ${iconClass} fs-4 text-primary"></i>
-                 <h5 class="card-title mt-2">${title}</h5>
-                 <h3 class="text-primary fw-bold" id="${selectorId}">
-                    ${value}
-                  </h3>
-                </div>
-              </div>
-            </div>
-          `;
+function attachListeners() {
+	const cardsContainer = document.getElementById(SELECTORS.CARDS);
+	cardsContainer?.addEventListener("click", (event) => {
+		const card = event.target.closest(".card.stat");
+		if (card?.dataset?.href) {
+			window.location.href = card.dataset.href;
+		}
+	});
 }
 
-export function renderDashboard(container) {
+export function init() {
 	const stats = calculateDashboardStats();
 	const cardsData = [
 		{
@@ -65,28 +61,21 @@ export function renderDashboard(container) {
 		},
 	];
 
-	container.innerHTML = `  <section id="dashboard-section" class="content-section">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item active" aria-current="page">
-                  <a href="#dashboard">Dashboard</a>
-                </li>
-              </ol>
-            </nav>
+	const breadcrumb = tpl.createBreadcrumb([
+		{ text: "Dashboard", href: "#dashboard", active: false },
+	]);
+
+	const pageHTML = `
+            ${breadcrumb}
             <div class="mb-4 text-primary-emphasis">
               <p>Bienvenido al panel administrativo.</p>
     <p>Utilice la barra lateral para navegar a través de las diferentes secciones de gestión.</p>
             </div>
-            <div class="row g-4 mb-4" id="dashboard-cards">
-              ${cardsData.map(createStatCard).join("")}
-              </div>
-          </section>`;
+            <div class="row g-4 mb-4" id="${SELECTORS.CARDS}">
+              ${cardsData.map(tpl.createStatCard).join("")}
+              </div>`;
 
-	const cardsContainer = document.getElementById("dashboard-cards");
-	cardsContainer.addEventListener("click", (event) => {
-		const card = event.target.closest(".card.stat");
-		if (card?.dataset.href) {
-			window.location.href = card.dataset.href;
-		}
-	});
+	ui.renderContent(tpl.createSectionWrapper("dashboard-section", pageHTML));
+
+	attachListeners();
 }

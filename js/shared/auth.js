@@ -8,6 +8,7 @@ export const auth = {
 		window.location.replace(page);
 	},
 	redirectToLogin: () => auth.redirectTo(PAGES.LOGIN),
+	redirectToAdmin: () => auth.redirectTo(PAGES.ADMIN),
 	hasSession,
 
 	/**

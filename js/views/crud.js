@@ -27,11 +27,7 @@ export function createCrudView(config) {
       renderEmptyState(container);
     }
   }
-  /**
-   * Renderiza la tabla de datos.
-   * @param {any[]} data - Los datos a renderizar.
-   * @param {HTMLElement} container - El contenedor de la tabla.
-   */
+
   function renderTable(data, container) {
     if (data.length === 0) {
       renderEmptyState(container);
@@ -56,10 +52,7 @@ export function createCrudView(config) {
       ?.addEventListener("click", handleTableClick);
   }
 
-  /**
-   * Renderiza la vista completa en el contenedor proporcionado.
-   * @param {HTMLElement} container - El contenedor principal.
-   */
+
   return function render(container) {
     container.innerHTML = `
       <section id="${sectionId}" class="content-section">

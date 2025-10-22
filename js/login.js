@@ -1,7 +1,6 @@
 import { auth } from "./shared/auth.js";
-import { api } from "./api.js";
-import { disableButton } from "./shared/ui.js";
-import { MESSAGES, PAGES } from "./shared/constants.js";
+import { MESSAGES } from "./shared/constants.js";
+import storageService from "./storage/index.js";
 
 const ERROR_CONTAINER_CLASS = "alert alert-danger d-none mb-3";
 const UI_SELECTORS = {
@@ -66,18 +65,12 @@ const handleLogin = (event) => {
 	if (!username || !password) {
     return ui.showError(MESSAGES.EMPTY_FIELDS);
 	}
-
-	const { restore: buttonRestore } = disableButton(
-    domElements.form.querySelector(UI_SELECTORS.submitButton),
-	);
-
-	api
-		.login(username, password)
-		.then(auth.redirectToAdmin)
-		.catch((error) => {
-			ui.showError(error.message);
-		})
-		.finally(buttonRestore);
+  const isLogged = storageService.auth.login(username, password)
+	if (isLogged){
+    auth.redirectToAdmin()
+  } else {
+    ui.showError(MESSAGES.INVALID_CREDENTIALS)
+  }
 };
 
 function initLogin() {

@@ -54,6 +54,15 @@ const createDefaultInput = (props, value) => {
 	if (props.type !== "file") {
 		input.value = value;
 	}
+	if (props.min) {
+		input.min = props.min;
+	}
+	if (props.max) {
+		input.max = props.max;
+	}
+	if (props.step) {
+		input.step = props.step;
+	}
 	return input;
 };
 
@@ -128,14 +137,12 @@ export const renderForm = (fields, initialData = {}) => {
 			const row = document.createElement("div");
 			row.className = "row";
 			fieldOrRow.forEach((fieldProps) => {
-				// Asignamos un tamaño de columna por defecto si no se especifica.
 				const propsWithDefaultCol = { col: "col", ...fieldProps };
 				const formGroup = createFormGroup(propsWithDefaultCol, initialData);
 				row.appendChild(formGroup);
 			});
 			form.appendChild(row);
 		} else {
-			// Si es un objeto, lo renderizamos como un campo normal.
 			const formGroup = createFormGroup(fieldOrRow, initialData);
 			form.appendChild(formGroup);
 		}

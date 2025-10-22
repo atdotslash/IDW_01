@@ -58,3 +58,16 @@ export const deleteDoctor = (id) => {
   //  eliminar al médico
   return doctors.remove(numericId);
 };
+export const getAppointmentsByDoctorId = (doctorId) => {
+  return appointments.getAll().filter(a => Number(a.medicoId) === Number(doctorId))
+}
+export const checkIfDuplicateAppointment = ( {doctorId, date, appointmentId}) => {
+  return appointments.getAll().some((ap) => {
+		const existingAppointmentDateTime = dayjs(ap.fechaHora);
+		return (
+			ap.medicoId === Number(doctorId) &&
+			existingAppointmentDateTime.isSame(date) &&
+			ap.id !== appointmentId
+		);
+	});
+}

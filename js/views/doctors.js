@@ -1,17 +1,18 @@
-import { api } from "../api.js";
-import { getFormData, renderForm } from "../components/form.js";
+import storageService from "../storage/index.js";
+import { getFormData } from "../components/form.js";
 import { createReusableModal, MODAL_SIZES } from "../components/modal.js";
 import notification from "../components/notifications.js";
 import { replaceContentWithSpinner } from "../components/spinner.js";
+import * as ui from "../core/ui.js";
+import * as tpl from "../core/templates.js";
 import { MESSAGES } from "../shared/constants.js";
 import { formatCurrency, fullName } from "../shared/formatters.js";
 import { readFileAsDataURL } from "../shared/file-reader.js";
 import { disableButton } from "../shared/ui.js";
-import { createCrudView } from "./crud.js";
 
 const SELECTORS = {
-  TABLE_BODY: "#doctors-table-body",
-  ADD_BUTTON: "#add-doctor-btn",
+    ADD_DOCTOR_BUTTON: "add-doctor-btn",
+    DOCTORS_TABLE_CONTAINER: "doctors-table-container",
 };
 
 let state = {
@@ -20,10 +21,190 @@ let state = {
   insuranceCompanies: [],
 };
 
+export function init() {
+    const breadcrumbHTML = tpl.createBreadcrumb([
+        { text: "Dashboard", href: "#dashboard", active: false },
+        { text: "Médicos", href: "#medicos", active: true },
+    ]);
+
+    let pageHtml = `
+        ${breadcrumbHTML}
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2 text-body mb-3 mb-md-0">Gestión de Médicos</h1>
+            <div class="btn-toolbar">
+                <button type="button" class="btn btn-primary" id="${SELECTORS.ADD_DOCTOR_BUTTON}">
+                    <i class="fa fa-plus-circle me-1"></i>
+                    Agregar Médico
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                Listado de Médicos
+            </div>
+            <div class="card-body">
+                <div id="${SELECTORS.DOCTORS_TABLE_CONTAINER}">
+                </div>
+            </div>
+        </div>
+    `;
+
+    pageHtml = tpl.createSectionWrapper("medicos-section", pageHtml);
+    ui.renderContent(pageHtml);
+
+    loadDoctors();
+    attachListeners();
+}
+
+function loadDoctors() {
+    const tableContainer = document.getElementById(SELECTORS.DOCTORS_TABLE_CONTAINER);
+    const { hide: removeSpinner } = replaceContentWithSpinner(tableContainer);
+
+    try {
+        const doctors = storageService.doctors.getAll();
+        const specialties = storageService.specialties.getAll();
+        const insuranceCompanies = storageService.insuranceCompanies.getAll();
+
+        state = { doctors, specialties, insuranceCompanies };
+
+        if (doctors.length === 0) {
+            tableContainer.innerHTML = '<p class="text-muted">No hay médicos registrados.</p>';
+            return;
+        }
+
+        const headers = ["#", "Foto", "Nombre", "Especialidad", "Acciones"];
+        const rowsHtml = doctors.map(doctor => {
+            const doctorForTable = {
+                ...doctor,
+                fullName: fullName(doctor),
+                specialtyName: state.specialties.find(s => s.id === doctor.especialidadId)?.nombre || "N/A"
+            };
+            return tpl.createDoctorTableRow(doctorForTable);
+        }).join("");
+
+        const tableHtml = ui.renderTable(headers, rowsHtml);
+        tableContainer.innerHTML = tableHtml;
+
+        attachTableListeners(tableContainer);
+    } catch (error) {
+        console.error("Error loading doctors:", error);
+        tableContainer.innerHTML = '<p class="text-danger">Error al cargar los médicos.</p>';
+    } finally {
+        removeSpinner();
+    }
+}
+
+async function handleSaveDoctor({ form, doctor = {}, modal }) {
+    form.classList.add("was-validated");
+    if (!form.checkValidity()) {
+        return;
+    }
+
+    const isEditing = Boolean(doctor.id);
+    const formData = getFormData(form);
+    formData.especialidadId = Number(formData.especialidadId);
+    formData.valorConsulta = Number(formData.valorConsulta);
+    formData.obraSocialIds = Array.isArray(formData.obraSocialIds)
+        ? formData.obraSocialIds.map(Number)
+        : [Number(formData.obraSocialIds)].filter(Boolean);
+
+    const photoInput = form.querySelector('input[name="foto"]');
+    if (photoInput.files[0]) {
+        try {
+            formData.foto = await readFileAsDataURL(photoInput.files[0]);
+        } catch {
+            notification.error("Hubo un error al procesar la imagen.");
+            return;
+        }
+    } else {
+        delete formData.foto;
+    }
 
 
+    try {
+        if (isEditing) {
+            storageService.doctors.update(doctor.id, formData);
+        } else {
+            storageService.doctors.add(formData);
+        }
+        notification.success(MESSAGES.ENTITY_OPERATION_SUCCESS("El médico", isEditing ? "actualizado" : "creado"));
+        loadDoctors();
+    } catch (error) {
+        console.error(error);
+        notification.error(MESSAGES.ENTITY_OPERATION_ERROR("médico", "guardar"));
+    } finally {
+      modal.hide()
+    }
+}
 
-async function handleShowDoctor(doctorId) {
+function openDoctorModal(doctor = {}) {
+    const isEditing = Boolean(doctor.id);
+    const title = isEditing ? "Editar Médico" : "Agregar Médico";
+
+    const modal = createReusableModal({
+        id: isEditing ? `edit-doctor-modal-${doctor.id}` : "add-doctor-modal",
+        title,
+        size: MODAL_SIZES.LARGE,
+        body: '',
+        footerButtons: [
+            { text: "Cerrar", className: "btn btn-secondary", onClick: () => modal.hide() },
+            { text: "Guardar", className: "btn btn-primary" },
+        ],
+    });
+
+    const modalBody = modal.getElement().querySelector(".modal-body");
+
+    try {
+        const doctorData = isEditing ? storageService.doctors.getById(doctor.id) : {};
+
+        const form = tpl.createDoctorForm(doctorData, state.specialties, state.insuranceCompanies);
+        modalBody.innerHTML = '';
+        modalBody.appendChild(form);
+
+        const saveButton = modal.getElement().querySelector(".modal-footer .btn-primary");
+        saveButton.onclick = () => {
+            handleSaveDoctor({  form, doctor, modal });
+        };
+
+    } catch  {
+        notification.error("No se pudo cargar la información para el formulario.");
+      }
+}
+
+function handleDeleteDoctor(doctorId) {
+  createReusableModal({
+    id: `delete-doctor-modal-${doctorId}`,
+    title: "Confirmar Eliminación",
+    body: `<p>${MESSAGES.CONFIRM_DELETE("médico")}</p>`,
+    footerButtons: [
+      {
+        text: "Cancelar",
+        className: "btn btn-secondary",
+        onClick: (_, modal) => modal.hide(),
+      },
+      {
+        text: "Eliminar",
+        className: "btn btn-danger",
+        onClick: (event, modal) => {
+          const {restore:buttonRestore} = disableButton(event.target, "Eliminando...");
+          try {
+              storageService.doctors.remove(doctorId);
+              notification.success(MESSAGES.ENTITY_DELETE_SUCCESS("médico"));
+              modal.hide();
+              loadDoctors();
+          } catch(error) {
+              console.error(error);
+              notification.error(MESSAGES.ENTITY_DELETE_ERROR("médico"));
+              buttonRestore();
+          }
+        },
+      },
+    ],
+  });
+}
+
+function handleShowDoctor(doctorId) {
   const modal = createReusableModal({
     id: `show-doctor-modal-${doctorId}`,
     title: "Perfil del Profesional",
@@ -33,21 +214,15 @@ async function handleShowDoctor(doctorId) {
       {
         text: "Cerrar",
         className: "btn btn-secondary",
-        onClick: (_, modal) => modal.hide(),
+        onClick: () => modal.hide(),
       },
     ],
   });
 
-  const {hide:removeSpinner} = replaceContentWithSpinner(
-    modal.getElement().querySelector(".modal-body"),
-    {
-      text: "Cargando informacion...",
-    }
-  );
+  const modalBody = modal.getElement().querySelector(".modal-body");
 
   try {
-
-    const doctor = await api.getDoctorById(doctorId);
+    const doctor = storageService.doctors.getById(doctorId);
     const {specialties, insuranceCompanies}  = state
     const specialty = specialties.find(
       (s) => s.id === doctor.especialidadId
@@ -57,31 +232,24 @@ async function handleShowDoctor(doctorId) {
       .filter((ic) => insuranceIds.includes(ic.id))
       .map((ic) => ic.nombre);
 
-    modal.getElement().querySelector(".modal-body").innerHTML = `
+    modalBody.innerHTML = `
         <div class="row">
                             <div class="col-md-4 text-center">
-                                <img src="${doctor.foto}" alt="${fullName(doctor)
-      }" class="img-fluid object-fit-cover rounded-circle mb-3" style="width: 150px; height: 150px;  border: 3px solid var(--color-accent);" >
-                                <h4 class="text-primary">${fullName(doctor)
-      }</h4>
-                                <p class="text-accent fw-semibold">${specialty.nombre
-      }</p>
+                                <img src="${doctor.foto}" alt="${fullName(doctor)}" class="img-fluid object-fit-cover rounded-circle mb-3" style="width: 150px; height: 150px;  border: 3px solid var(--color-accent);" >
+                                <h4 class="text-primary">${fullName(doctor)}</h4>
+                                <p class="text-accent fw-semibold">${specialty.nombre}</p>
                             </div>
                             <div class="col-md-8">
                                 <div class="mb-4">
                                     <h6 class="text-primary fw-bold">Información Profesional</h6>
-                                    <p class="mb-2"><strong>Matrícula:</strong> ${doctor.matriculaProfesional
-      }</p>
-                                    <p class="mb-2"><strong>Valor de Consulta:</strong> <span class="text-accent fw-bold">${formatCurrency(
-        doctor.valorConsulta
-      )}</span></p>
+                                    <p class="mb-2"><strong>Matrícula:</strong> ${doctor.matriculaProfesional}</p>
+                                    <p class="mb-2"><strong>Valor de Consulta:</strong> <span class="text-accent fw-bold">${formatCurrency(doctor.valorConsulta)}</span></p>
                                 </div>
 
 
                                     <div class="mb-4">
                                         <h6 class="text-primary fw-bold">Descripción</h6>
-                                        <p class="text-muted">${doctor.descripcion
-      }</p>
+                                        <p class="text-muted">${doctor.descripcion}</p>
                                     </div>
                                     <div class="mb-4">
                                         <h6 class="text-primary fw-bold">Obras Sociales Aceptadas</h6>
@@ -102,312 +270,34 @@ async function handleShowDoctor(doctorId) {
         `;
   } catch (error) {
     console.error(error);
-    modal.getElement().querySelector(".modal-body").innerHTML =
+    modalBody.innerHTML =
       `<div class="alert alert-danger">${MESSAGES.ENTITY_LOAD_ERROR("información del profesional")}</div>`;
-  } finally {
-    removeSpinner();
   }
 }
 
-const removeDoctorTableRow = (doctorId) => {
-  const row = document.querySelector(
-    `${SELECTORS.TABLE_BODY} tr[data-id="${doctorId}"]`
-  );
-  row?.remove();
-  window.checkEmptyState?.();
 
-};
+function attachTableListeners(tableContainer) {
+    tableContainer.addEventListener("click", (event) => {
+        const editButton = event.target.closest(".edit-btn");
+        const deleteButton = event.target.closest(".delete-btn");
+        const showButton = event.target.closest(".show-btn");
 
-const addDoctorTableRow = (doctor) => {
-  const tableBody = document.querySelector(SELECTORS.TABLE_BODY);
-  const newRowHTML = createDoctorTableRow(doctor);
-  tableBody?.insertAdjacentHTML("beforeend", newRowHTML);
-};
-
-const updateDoctorTableRow = (doctor) => {
-  const row = document.querySelector(
-    `${SELECTORS.TABLE_BODY} tr[data-id="${doctor.id}"]`
-  );
-  if (row) {
-    const newRowHTML = createDoctorTableRow(doctor);
-    row.outerHTML = newRowHTML;
-  }
-};
-
-async function handleDoctorFormSubmit({
-  event,
-  form,
-  modal,
-  action,
-  doctorId,
-}) {
-  form.classList.add("was-validated");
-  if (!form.checkValidity()) {
-    return;
-  }
-
-  const formData = getFormData(form);
-  formData.especialidadId = Number(formData.especialidadId);
-  formData.valorConsulta = Number(formData.valorConsulta);
-  // Asegurarse de que insuranceIds sea un array de números
-  formData.obraSocialIds = Array.isArray(formData.obraSocialIds)
-    ? formData.obraSocialIds.map(Number)
-    : [Number(formData.obraSocialIds)].filter(Boolean);
-
-  // Manejar la carga de la imagen
-  const photoInput = form.querySelector('input[name="foto"]');
-  if (photoInput.files[0]) {
-    try {
-      formData.foto = await readFileAsDataURL(photoInput.files[0]);
-    } catch {
-      notification.error("Hubo un error al procesar la imagen.");
-      return;
-    }
-  } else {
-    delete formData.foto;
-  }
-  const { restore } = disableButton(event.target, "Guardando...");
-
-  action({ id: doctorId, data: formData })
-    .then((data) => {
-      const isUpdate = !!doctorId
-      notification.success(MESSAGES.ENTITY_OPERATION_SUCCESS("El médico", isUpdate ? "actualizado": "creado"));
-      doctorId ?
-        updateDoctorTableRow(data) :
-        addDoctorTableRow(data);
-      modal.hide();
-    })
-    .catch((error) => {
-      console.error(error);
-      notification.error(MESSAGES.ENTITY_OPERATION_ERROR("médico", "guardar"));
-    })
-    .finally(() => restore);
+        if (showButton) {
+            handleShowDoctor(Number(showButton.dataset.id));
+            return;
+        }
+        if (editButton) {
+            openDoctorModal({ id: Number(editButton.dataset.id) });
+            return;
+        }
+        if (deleteButton) {
+            handleDeleteDoctor(Number(deleteButton.dataset.id));
+        }
+    });
 }
 
-async function openDoctorModal(doctor) {
-  const isEditing = Boolean(doctor?.id);
-  const modalId = isEditing
-    ? `edit-doctor-modal-${doctor.id}`
-    : "add-doctor-modal";
-  const title = isEditing ? "Editar Médico" : "Agregar Médico";
-  const action = isEditing ? api.updateDoctor : api.createDoctor;
-
-  const modal = createReusableModal({
-    id: modalId,
-    title,
-    size: MODAL_SIZES.LARGE,
-    body: renderForm([]),
-    footerButtons: [
-      {
-        text: "Cerrar",
-        className: "btn btn-secondary",
-        onClick: (_, modal) => modal.hide(),
-      },
-      { text: "Guardar", className: "btn btn-primary", disabled: true },
-    ],
-  });
-
-  const modalBody = modal.getElement().querySelector(".modal-body");
-  const { hide: removeSpinner } = replaceContentWithSpinner(modalBody, {
-    text: "Cargando formulario...",
-  });
-
-  try {
-
-    const doctorData = isEditing ? await api.getDoctorById(doctor.id) : {};
-    removeSpinner();
-
-    const form = renderForm(
-      [
-        [
-          { name: "nombre", label: "Nombre", type: "text", required: true, col: 'col-md-6' },
-          { name: "apellido", label: "Apellido", type: "text", required: true, col: 'col-md-6' },
-        ],
-        [
-          { name: "matriculaProfesional", label: "Matrícula", type: "number", required: true, col: "col-md-6" },
-          {
-            name: "especialidadId",
-            label: "Especialidad",
-            type: "select",
-            required: true,
-            col: "col-md-6",
-            options: state.specialties.map((s) => ({
-              value: s.id,
-              text: s.nombre,
-            })),
-          },
-        ],
-        [
-          {
-            name: "valorConsulta",
-            label: "Valor Consulta ($)",
-            type: "number",
-            required: true,
-            attributes: { step: "0.01" },
-            col: "col-md-6"
-          },
-          {
-            name: "foto",
-            label: "Foto",
-            type: "file",
-            required: !isEditing,
-            attributes: { accept: "image/*" },
-            col: "col-md-6"
-          },
-        ],
-        { name: "descripción", label: "Descripción", type: "textarea" },
-        {
-          name: "obraSocialIds",
-          label: "Obras Sociales",
-          type: "select",
-          multiple: true,
-          options: state.insuranceCompanies.map((i) => ({
-            value: i.id,
-            text: i.nombre,
-          })),
-        },
-      ],
-      doctorData
-    );
-
-    modalBody.innerHTML = "";
-    modalBody.appendChild(form);
-
-    const saveButton = modal
-      .getElement()
-      .querySelector(".modal-footer .btn-primary");
-    saveButton.disabled = false;
-    saveButton.onclick = (event) => {
-      handleDoctorFormSubmit({
-        event,
-        form,
-        modal,
-        action,
-        doctorId: doctor?.id,
-      });
-    };
-  } catch (error) {
-    console.error("Error al abrir el modal de médico:", error);
-    notification.error("No se pudo cargar la información para el formulario.");
-    modal.hide();
-  }
+function attachListeners() {
+    document.getElementById(SELECTORS.ADD_DOCTOR_BUTTON).addEventListener("click", () => {
+        openDoctorModal();
+    });
 }
-
-function handleDeleteDoctor(doctorId) {
-  createReusableModal({
-    id: `delete-doctor-modal-${doctorId}`,
-    title: "Confirmar Eliminación",
-    body: `<p>${MESSAGES.CONFIRM_DELETE("médico")}</p>`,
-    footerButtons: [
-      {
-        text: "Cancelar",
-        className: "btn btn-secondary",
-        onClick: (_, modal) => modal.hide(),
-      },
-      {
-        text: "Eliminar",
-        className: "btn btn-danger",
-        onClick: (event, modal) => {
-          const {restore:buttonRestore} = disableButton(event.target, "Eliminando...");
-          api
-            .deleteDoctor({ id: doctorId })
-            .then(() => {
-              removeDoctorTableRow(doctorId);
-              notification.success(MESSAGES.ENTITY_DELETE_SUCCESS("médico"));
-              modal.hide();
-            })
-            .catch((error) => {
-              console.error(error);
-              notification.error(
-                MESSAGES.ENTITY_DELETE_ERROR("médico")
-              );
-              buttonRestore();
-            });
-        },
-      },
-    ],
-  });
-}
-
-function handleTableClick(event) {
-  const editButton = event.target.closest(".edit-btn");
-  const deleteButton = event.target.closest(".delete-btn");
-  const showButton = event.target.closest(".show-btn");
-  if (showButton) {
-    return handleShowDoctor(+showButton.dataset.id);
-  }
-  if (editButton) {
-    return openDoctorModal({ id: Number(editButton.dataset.id) });
-  }
-  if (deleteButton) {
-    return handleDeleteDoctor(Number(deleteButton.dataset.id));
-  }
-}
-
-function createDoctorTableRow(doctor, isHeader = false) {
-  if (isHeader) {
-    return `
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Foto</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Especialidad</th>
-                <th>Acciones</th>
-            </tr>
-        `;
-  }
-  const specialtyName =
-    state.specialties.find((s) => s.id === doctor.especialidadId)?.nombre || "N/A";
-  return `
-      <tr data-id="${doctor.id}">
-        <td>${doctor.id}</td>
-        <td>
-          <img src="${doctor.foto}" alt="${doctor.nombre}" class="img-thumbnail object-fit-cover rounded-circle" width="64">
-        </td>
-        <td>${fullName(doctor)}</td>
-        <td>${specialtyName}</td>
-        <td>
-          <div class="d-flex flex-column flex-md-row gap-2">
-            <button class="btn btn-sm btn-outline-secondary show-btn" data-id="${doctor.id}">
-              <i class="fa-solid fa-eye"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${doctor.id}">
-              <i class="fa-solid fa-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${doctor.id}">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-    `;
-}
-
-
-async function loadData() {
-    const [doctors, specialties, insuranceCompanies] = await Promise.all([
-    api.getDoctors(),
-    api.getSpecialties(),
-    api.getInsuranceCompanies(),
-  ]);
-  state = { ...state, doctors, specialties, insuranceCompanies };
-  return {doctors, specialties, insuranceCompanies}
-}
-
-async function fetchData() {
-  const {doctors} = await loadData();
-  return doctors;
-}
-
-export const renderDoctors = createCrudView({
-  entityName: "Medico",
-  entityNamePlural: "Medicos",
-  sectionId: "medicos-section",
-  tableId: "doctors-table",
-  addButtonId: "add-doctor-btn",
-  tableBodyId: "doctors-table-body",
-  fetchData,
-  createTableRow: createDoctorTableRow,
-  handleTableClick,
-  onAddButtonClick: () => openDoctorModal(),
-});

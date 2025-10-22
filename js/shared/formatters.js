@@ -4,7 +4,7 @@ export function formatCurrency(amount) {
     return new Intl.NumberFormat(CURRENCY_CONFIG.LOCALE, {
         style: 'currency',
         currency: CURRENCY_CONFIG.CURRENCY,
-    }).format(isNaN(amount) ? 0 : amount);
+    }).format(Number.isNaN(amount) ? 0 : amount);
 }
 
 export function fullName(doctor) {

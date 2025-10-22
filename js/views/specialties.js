@@ -1,221 +1,169 @@
-import { getFormData, renderForm } from "../components/form.js";
-import { createReusableModal } from "../components/modal.js";
-import notification from "../components/notifications.js";
-import { createCrudView } from "./crud.js";
-import { MESSAGES } from "../shared/constants.js";
 import storageService from "../storage/index.js";
+import { createReusableModal } from "../components/modal.js";
+import * as ui from "../core/ui.js";
+import * as tpl from "../core/templates.js";
+import { getFormData } from "../components/form.js";
+import { MESSAGES } from "../shared/constants.js";
+import notifications from "../components/notifications.js";
 
+const SELECTORS = {
+    ADD_SPECIALTY_BUTTON: "btn-add-specialty",
+    SPECIALTIES_TABLE_CONTAINER: "specialties-table-container",
+};
 
+export function init() {
+    const breadcrumbHTML = tpl.createBreadcrumb([
+        { text: "Dashboard", href: "#dashboard", active: false },
+        { text: "Especialidades", href: "#especialidades", active: true },
+    ]);
 
-let specialtiesView;
+    let pageHtml = `
+        ${breadcrumbHTML}
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2 text-body mb-3 mb-md-0">Gestión de Especialidades</h1>
+            <div class="btn-toolbar">
+                <button type="button" class="btn btn-primary" id="${SELECTORS.ADD_SPECIALTY_BUTTON}">
+                    <i class="fa fa-plus-circle me-1"></i>
+                    Agregar Especialidad
+                </button>
+            </div>
+        </div>
 
-function handleStorageAction({ action, onSuccess, onError }) {
-	try {
-		const result = action();
-		if (!result) {
-			throw new Error("La operación no se pudo completar");
-		}
-		onSuccess(result);
-	} catch (error) {
-		console.error(error);
-		onError(error);
-	}
+        <div class="card">
+            <div class="card-header">
+                Especialidades Médicas
+            </div>
+            <div class="card-body">
+                <div id="${SELECTORS.SPECIALTIES_TABLE_CONTAINER}">
+                    <p class="text-muted">Cargando especialidades...</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    pageHtml = tpl.createSectionWrapper("especialidades-section", pageHtml);
+    ui.renderContent(pageHtml);
+
+    loadSpecialties();
+    attachListeners();
 }
 
-function handleFormSubmit({ form, modal, action, specialtyId }) {
-	form.classList.add("was-validated");
-	if (!form.checkValidity()) {
-		return;
-	}
-	const isUpdate = Boolean(specialtyId);
-	const formData = getFormData(form);
-	handleStorageAction({
-		action: isUpdate
-			? () => action(specialtyId, formData)
-			: () => action(formData),
-		onSuccess: (data) => {
-			if (isUpdate) {
-				specialtiesView.updateRow(data);
-			} else {
-				specialtiesView.addRow(data);
-			}
-			notification.success(
-				MESSAGES.ENTITY_OPERATION_SUCCESS(
-					"Especialidad",
-					isUpdate ? "actualizada" : "creada",
-				),
-			);
-			modal.hide();
-		},
-		onError: (error) => {
-			console.error(error);
-			notification.error(
-				error.message || `Error al ${isUpdate ? "actualizar" : "crear"}`,
-			);
-			modal.hide();
-		},
-	});
+function loadSpecialties() {
+    const tableContainer = document.getElementById(SELECTORS.SPECIALTIES_TABLE_CONTAINER);
+    tableContainer.innerHTML = "<p>Cargando especialidades...</p>";
+
+    try {
+        const specialties = storageService.specialties.getAll();
+
+        if (specialties.length === 0) {
+            tableContainer.innerHTML = '<p class="text-muted">No hay especialidades registradas.</p>';
+            return;
+        }
+
+        const headers = ["#", "Nombre", "Acciones"];
+        const rowsHtml = specialties.map(tpl.createSpecialtyRow).join("");
+        const tableHtml = ui.renderTable(headers, rowsHtml);
+        tableContainer.innerHTML = tableHtml;
+
+        attachTableListeners(tableContainer);
+    } catch (error) {
+        console.error("Error loading specialties:", error);
+        tableContainer.innerHTML = '<p class="text-danger">Error al cargar las especialidades.</p>';
+    }
 }
 
-function populateModalWithForm(modal, specialty) {
-	try {
-		const isEditing = Boolean(specialty?.id);
-		const specialtyData = isEditing
-			? storageService.specialties.getById(specialty.id)
-			: {};
-		const form = renderForm(
-			[
-				{
-					name: "nombre",
-					label: "Nombre",
-					type: "text",
-					validationMessage: "El nombre es obligatorio",
-					required: true,
-				},
-			],
-			specialtyData,
-		);
-		const modalBody = modal.getElement().querySelector(".modal-body");
-		modalBody.appendChild(form);
+function handleSaveSpecialty({ form, specialty = {}, modal }) {
+    form.classList.add("was-validated");
+    if (!form.checkValidity()) {
+        return;
+    }
 
-		const action = isEditing
-			? storageService.specialties.update
-			: storageService.specialties.add;
-		const handleSubmit = (event) => {
-			if (event) event.preventDefault();
-			handleFormSubmit({
-				form,
-				modal,
-				action,
-				specialtyId: specialty?.id,
-			});
-		};
-		form.addEventListener("submit", handleSubmit);
-		const saveButton = modal
-			.getElement()
-			.querySelector(".modal-footer .btn-primary");
-		saveButton.onclick = handleSubmit;
-	} catch (error) {
-		console.error(error);
-		notification.error(
-			MESSAGES.ENTITY_OPERATION_ERROR("especialidad", "cargar"),
-		);
-		modal.hide();
-	}
+    const formData = getFormData(form);
+    const isEditing = Boolean(specialty.id);
+
+    try {
+        if (isEditing) {
+            storageService.specialties.update(specialty.id, formData);
+            notifications.success(MESSAGES.ENTITY_OPERATION_SUCCESS("Especialidad", "actualizada"));
+        } else {
+            storageService.specialties.add(formData);
+            notifications.success(MESSAGES.ENTITY_OPERATION_SUCCESS("Especialidad", "creada"));
+        }
+        modal.hide();
+        loadSpecialties();
+    } catch (error) {
+        console.error(error);
+        notifications.error(error.message || `Error al ${isEditing ? "actualizar" : "crear"} la especialidad.`);
+    }
 }
-function openSpecialtyModal(specialty) {
-	const isEditing = Boolean(specialty?.id);
-	const modal = createReusableModal({
-		id: isEditing
-			? `edit-specialty-modal-${specialty.id}`
-			: "add-specialty-modal",
-		title: isEditing ? "Editar Especialidad" : "Agregar Especialidad",
-		body: "",
-		footerButtons: [
-			{
-				text: "Cerrar",
-				className: "btn btn-secondary",
-				onClick: (_, modal) => modal.hide(),
-			},
-			{
-				text: "Guardar",
-				className: "btn btn-primary",
-			},
-		],
-	});
-	populateModalWithForm(modal, specialty);
+
+function openSpecialtyModal(specialty = {}) {
+    const isEditing = Boolean(specialty.id);
+    let initialData = {};
+
+    if (isEditing) {
+        initialData = storageService.specialties.getById(specialty.id);
+    }
+
+    const form = tpl.createSpecialtyForm(initialData);
+
+    createReusableModal({
+        title: isEditing ? "Editar Especialidad" : "Agregar Especialidad",
+        id: isEditing ? `edit-specialty-modal-${specialty.id}` : "add-specialty-modal",
+        body: form,
+        footerButtons: [
+            {
+                text: "Cerrar",
+                className: "btn btn-secondary",
+                onClick: (_, modal) => modal.hide(),
+            },
+            {
+                text: "Guardar",
+                className: "btn btn-primary",
+                onClick: (_, modal) => {
+                    handleSaveSpecialty({ form, specialty, modal });
+                },
+            },
+        ],
+    });
 }
 
 function handleDeleteSpecialty(specialtyId) {
-	createReusableModal({
-		id: `delete-specialty-modal-${specialtyId}`,
-		title: "Confirmar Eliminación",
-		body: `<p>${MESSAGES.CONFIRM_DELETE("especialidad")}</p>`,
-		footerButtons: [
-			{
-				text: "Cancelar",
-				className: "btn btn-secondary",
-				onClick: (_, modal) => modal.hide(),
-			},
-			{
-				text: "Eliminar",
-				className: "btn btn-danger",
-				onClick: (_, modal) => {
-					handleStorageAction({
-						action: () => storageService.specialties.remove(specialtyId),
-						onSuccess: () => {
-							specialtiesView?.removeRow(specialtyId);
-							notification.success(
-								MESSAGES.ENTITY_DELETE_SUCCESS("La especialidad"),
-							);
-							modal.hide();
-						},
-						onError: (error) => {
-							console.error(error);
-							notification.error(error.message || MESSAGES.ENTITY_DELETE_ERROR("especialidad"));
-							modal.hide();
-						},
-					});
-				},
-			},
-		],
-	});
+    ui.showConfirmModal({
+        message: MESSAGES.CONFIRM_DELETE("la especialidad"),
+        onConfirm: () => {
+            try {
+                storageService.specialties.remove(specialtyId);
+                notifications.success(MESSAGES.ENTITY_DELETE_SUCCESS("La especialidad"));
+                loadSpecialties();
+            } catch (error) {
+                console.error(error);
+                notifications.error(error.message || MESSAGES.ENTITY_DELETE_ERROR("la especialidad"));
+            }
+        },
+    });
 }
 
-function handleTableClick(event) {
-	const editButton = event.target.closest(".edit-btn");
-	const deleteButton = event.target.closest(".delete-btn");
-	if (editButton) {
-		const specialtyId = Number(editButton.dataset.id);
-		if (specialtyId) {
-			openSpecialtyModal({ id: specialtyId });
-		}
-		return;
-	}
+function attachTableListeners(tableContainer) {
+    tableContainer.addEventListener("click", (event) => {
+        const editButton = event.target.closest(".edit-btn");
+        const deleteButton = event.target.closest(".delete-btn");
 
-	if (deleteButton) {
-		handleDeleteSpecialty(Number(deleteButton.dataset.id));
-	}
+        if (editButton) {
+            const specialtyId = Number(editButton.dataset.id);
+            openSpecialtyModal({ id: specialtyId });
+            return;
+        }
+
+        if (deleteButton) {
+            const specialtyId = Number(deleteButton.dataset.id);
+            handleDeleteSpecialty(specialtyId);
+        }
+    });
 }
 
-function createSpecialtyTableRow(specialty, { isHeader = false } = {}) {
-	if (isHeader) {
-		return `
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Nombre</th>
-        <th scope="col">Acciones</th>
-      </tr>
-    `;
-	}
-
-	return `
-    <tr data-id="${specialty.id}">
-      <td>${specialty.id}</td>
-      <td>${specialty.nombre}</td>
-      <td class="d-flex gap-2 align-items-center ">
-        <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${specialty.id}">
-          <i class="fa-solid fa-pencil"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${specialty.id}">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-      </td>
-    </tr>
-  `;
+function attachListeners() {
+    document.getElementById(SELECTORS.ADD_SPECIALTY_BUTTON).addEventListener("click", () => {
+        openSpecialtyModal();
+    });
 }
-export const renderSpecialties = (container) => {
-	const view = createCrudView({
-		entityName: "Especialidad",
-		entityNamePlural: "Especialidades",
-		sectionId: "especialidades-section",
-		tableId: "specialties-table",
-		addButtonId: "add-specialty-btn",
-		tableBodyId: "specialties-table-body",
-		fetchData: storageService.specialties.getAll,
-		createTableRow: createSpecialtyTableRow,
-		handleTableClick,
-		onAddButtonClick: () => openSpecialtyModal(),
-	});
-	specialtiesView = view(container);
-};

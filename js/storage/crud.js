@@ -8,6 +8,7 @@ const nextId = (collection) => {
 
 export const createCrudFunctions = (entityKey) => {
 	const getAll = () => getEntity(entityKey);
+
     const replaceAll = (newCollection) => {
       saveEntity(entityKey, newCollection);
     };
