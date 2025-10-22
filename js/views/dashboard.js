@@ -1,91 +1,81 @@
 import storageService from "../storage/index.js";
-
+import * as ui from "../core/ui.js";
+import * as tpl from "../core/templates.js";
 const SELECTORS = {
-  DOCTORS: "totalMedicos",
-  SPECIALTIES: "totalEspecialidades",
-  INSURANCE_COMPANIES: "totalObrasSociales",
-  RESERVATIONS: "totalReservas",
+	DOCTORS: "totalMedicos",
+	SPECIALTIES: "totalEspecialidades",
+	INSURANCE_COMPANIES: "totalObrasSociales",
+	RESERVATIONS: "totalReservas",
+	CARDS: "dashboard-cards",
 };
 
 const calculateDashboardStats = () => {
-  return {
-    totalDoctors: storageService.doctors.getAll().length,
-    totalSpecialties: storageService.specialties.getAll().length,
-    totalInsuranceCompanies: storageService.insuranceCompanies.getAll().length,
-    totalReservations: storageService.reservations.getAll().length,
-  };
+	return {
+		totalDoctors: storageService.doctors.getAll().length,
+		totalSpecialties: storageService.specialties.getAll().length,
+		totalInsuranceCompanies: storageService.insuranceCompanies.getAll().length,
+		totalReservations: storageService.reservations.getAll().length,
+	};
 };
 
-export function renderDashboard(container) {
-  const stats = calculateDashboardStats();
+function attachListeners() {
+	const cardsContainer = document.getElementById(SELECTORS.CARDS);
+	cardsContainer?.addEventListener("click", (event) => {
+		const card = event.target.closest(".card.stat");
+		if (card?.dataset?.href) {
+			window.location.href = card.dataset.href;
+		}
+	});
+}
 
-  container.innerHTML = `  <section id="dashboard-section" class="content-section">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item active" aria-current="page">
-                  <a href="#dashboard">Dashboard</a>
-                </li>
-              </ol>
-            </nav>
+export function init() {
+	const stats = calculateDashboardStats();
+	const cardsData = [
+		{
+			title: "Médicos",
+			iconClass: "fa-user-doctor",
+			value: stats.totalDoctors,
+			href: "#medicos",
+			selectorId: SELECTORS.DOCTORS,
+		},
+		{
+			title: "Especialidades",
+			iconClass: "fa-stethoscope",
+			value: stats.totalSpecialties,
+			href: "#especialidades",
+			selectorId: SELECTORS.SPECIALTIES,
+		},
+		{
+			title: "Obras Sociales",
+			iconClass: "fa-hand-holding-medical",
+			value: stats.totalInsuranceCompanies,
+			href: "#obrassociales",
+			selectorId: SELECTORS.INSURANCE_COMPANIES,
+		},
+		{
+			title: "Reservas",
+			iconClass: "fa-clipboard-list",
+			value: stats.totalReservations,
+			href: "#reservas",
+			selectorId: SELECTORS.RESERVATIONS,
+		},
+	];
+
+	const breadcrumb = tpl.createBreadcrumb([
+		{ text: "Dashboard", href: "#dashboard", active: false },
+	]);
+
+	const pageHTML = `
+            ${breadcrumb}
             <div class="mb-4 text-primary-emphasis">
               <p>Bienvenido al panel administrativo.</p>
     <p>Utilice la barra lateral para navegar a través de las diferentes secciones de gestión.</p>
             </div>
-            <div class="row g-4 mb-4">
-              <div class="col-md-6 col-xl-3">
-                <div 
-                 onclick="window.location.href='#medicos'"
-                class="card stat shadow h-100 text-center">
-                  <div class="card-body">
-                    <i class="fa-solid fa-user-doctor fs-4 text-primary"></i>
-                    <h5 class="mt-2 flex-grow-1">Médicos</h5>
-                    <h3 class="text-primary fw-bold" id="${SELECTORS.DOCTORS}">
-                    ${stats.totalDoctors}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-xl-3">
-                <div 
-                 onclick="window.location.href='#especialidades'"
-                class="card stat shadow h-100 text-center">
-                  <div class="card-body">
-                    <i class="fa-solid fa-stethoscope fs-4 text-primary"></i>
+            <div class="row g-4 mb-4" id="${SELECTORS.CARDS}">
+              ${cardsData.map(tpl.createStatCard).join("")}
+              </div>`;
 
-                    <h5 class="card-title mt-2">Especialidades</h5>
-                    <h3 class="text-primary fw-bold" id="${SELECTORS.SPECIALTIES}">
-                      ${stats.totalSpecialties}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-xl-3">
-                <div 
-                 onclick="window.location.href='#obras-sociales'"
-                class="card stat shadow h-100 text-center">
-                  <div class="card-body">
-                    <i class="fa-solid fa-hand-holding-medical fs-4 text-primary"></i>
-                    <h5 class="card-title mt-2">Obras Sociales</h5>
-                    <h3 class="text-primary fw-bold" id="${SELECTORS.INSURANCE_COMPANIES}">
-                      ${stats.totalInsuranceCompanies}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-xl-3">
-                <div 
-                 onclick="window.location.href='#reservas'"
-                class="card stat shadow h-100 text-center">
-                  <div class="card-body">
-                    <i class="fa-solid fa-clipboard-list fs-4 text-primary"></i>
+	ui.renderContent(tpl.createSectionWrapper("dashboard-section", pageHTML));
 
-                    <h5 class="card-title mt-2">Reservas</h5>
-                    <h3 class="text-primary fw-bold" id="${SELECTORS.RESERVATIONS}">
-                    ${stats.totalReservations}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>`;
+	attachListeners();
 }

@@ -58,3 +58,9 @@ export const saveEntity = (entityKey, data) => {
 export const removeData = (key) => {
   localStorage.removeItem(key);
 };
+
+export const parseNumericId = (id) => {
+	const numericId = Number(id);
+	if (Number.isNaN(numericId)) return null;
+	return numericId;
+};

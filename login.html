@@ -19,7 +19,7 @@
     <nav class="navbar bg-body-tertiary navbar-expand-lg">
       <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="index.html">
-          <img src="assets/logo.png" loading="lazy" alt="Logo Clínica IDW" class="logo-img" />
+          <img src="assets/logo.png" alt="Logo Clínica IDW" class="logo-img" />
           <div class="d-none d-md-block">
             <h1 class="d-block mb-0 fs-3 text-primary">
               Clínica <strong class="fw-bold">IDW</strong>
@@ -58,27 +58,28 @@
       <div class="row">
         <div class="col-12 col-md-8 col-lg-6 mx-auto">
           <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-              <h4 class="py-2 fs-4">Iniciar Sesión</h4>
+            <div class="card-header pt-4 bg-primary text-white text-center">
+              <h2>
+                <i class="fa fa-shield-alt me-1"></i>
+                <span>Administración</span></h2>
+              <p>Ingresa tus credenciales</p>
             </div>
             <div class="card-body">
               <form id="formLogin">
-                <div class="mb-3">
+                <div class="mb-4">
                   <label for="user" class="form-label">Usuario</label>
-                  <input type="text" class="form-control" id="user" required placeholder="Ingrese su usuario" />
+                  <input type="text" autocomplete="username" class="form-control" id="user" required placeholder="Ingrese su usuario" />
                 </div>
-                <div class="mb-3">
+                <div>
                   <label for="pass" class="form-label">Contraseña</label>
-                  <input type="password" class="form-control" id="pass" required placeholder="Ingrese su contraseña" />
+                  <input type="password" autocomplete="current-password" class="form-control" id="pass" required placeholder="Ingrese su contraseña" />
                 </div>
-                <div class="row g-2">
-                  <div class="col-12 col-md-6">
-                    <button type="submit" class="btn btn-primary w-100 bg-primary">
-                      Ingresar
+                <div class="row mt-4">
+                  <div class="col-12">
+                    <button type="submit" class="btn d-flex align-items-center justify-content-center fs-5 gap-1 btn-primary w-100 bg-primary">
+                      <i class="fa fa-arrow-right-from-bracket"></i>
+                      <span>Ingresar</span>
                     </button>
-                  </div>
-                  <div class="col-12 col-md-6">
-                    <button type="reset" class="btn btn-secondary w-100">Cancelar</a>
                   </div>
                 </div>
               </form>
@@ -151,6 +152,16 @@
       &copy; 2025 - Todos los derechos reservados
     </div>
   </footer>
+  <template id="theme-toggle-button-template">
+      <button class="btn theme-toggle btn-sm bg-transparent w-100 border-0 text-muted d-flex
+  align-items-center
+  text-decoration-none justify-content-start gap-2"
+              type="button"
+              title="cambiar tema claro/oscuro">
+          <i></i>
+          <span></span>
+      </button>
+  </template>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>

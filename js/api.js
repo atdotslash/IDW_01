@@ -60,7 +60,7 @@ export const api = {
     return simulateAsyncRequest(() => storageService.doctors.getById(id))
   },
   createDoctor: ({ data }) => {
-    return simulateAsyncRequest(() => storageService.doctors.create(data))
+    return simulateAsyncRequest(() => storageService.doctors.add(data))
   },
   updateDoctor: ({ id, data }) => {
     return simulateAsyncRequest(() => storageService.doctors.update(id, data))
@@ -77,7 +77,7 @@ export const api = {
   },
 
   createSpecialty: ({ data }) => {
-    return simulateAsyncRequest(() => storageService.specialties.create(data))
+    return simulateAsyncRequest(() => storageService.specialties.add(data))
   },
 
   updateSpecialty: ({ id, data }) => {

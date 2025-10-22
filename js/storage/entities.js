@@ -1,5 +1,6 @@
-import { createCrudFunctions, nextId } from "./crud.js";
 import { STORAGE_KEYS } from "./constants.js";
+import { createCrudFunctions } from "./crud.js";
+import { parseNumericId } from "./utils.js";
 
 export const specialties = createCrudFunctions(STORAGE_KEYS.specialties);
 export const insuranceCompanies = createCrudFunctions(
@@ -15,11 +16,7 @@ export const createDoctor = (newData) => {
   if (isLicenseNumberTaken) {
     throw new Error(`El doctor con el número de matricula ${newData.matriculaProfesional} ya existe`);
   }
-  const newDoctor = {
-    id: nextId(allDoctors),
-    ...newData,
-  };
-  return doctors.add(newDoctor)
+  return doctors.add(newData)
 }
 
 export const createSpecialty = (newData) => {
@@ -28,11 +25,7 @@ export const createSpecialty = (newData) => {
   if (isNameTaken) {
     throw new Error(`El nombre de la especialidad ya existe`);
   }
-  const newSpecialty = {
-    id: nextId(allSpecialties),
-    ...newData,
-  };
-  return specialties.add(newSpecialty);
+  return specialties.add(newData);
 }
 
 
@@ -48,22 +41,33 @@ export const deleteSpecialty = (id) => {
 };
 
 export const deleteDoctor = (id) => {
-  const doctorAppointments = appointments
-    .getAll()
-    .filter((a) => a.medicoId === id);
-  const doctorAppointmentsIds = doctorAppointments.map((t) => t.id);
+  const numericId = parseNumericId(id)
+  if (!numericId) return false
+  const allAppointments = appointments.getAll()
+  const appointmentsIdsToDelete = allAppointments.filter( a => a.medicoId === numericId).map(a => a.id)
 
   // Eliminar reservas asociadas a esos turnos
-  const currentReservations = reservations.getAll();
-  const filteredReservations = currentReservations.filter(
-    (r) => !doctorAppointmentsIds.includes(r.turnoId)
-  );
-  filteredReservations.forEach((r) => reservations.remove(r.id));
+  if (appointmentsIdsToDelete.length > 0) {
+    const reservationsToKeep = reservations.getAll().filter(r => !r.turnoId.includes(appointmentsIdsToDelete))
+    reservations.replaceAll(reservationsToKeep)
+    // Eliminar los turnos del medico
+    const appointmentsToKeep = allAppointments.filter(a => a.medicoId !== numericId)
+    appointments.replaceAll(appointmentsToKeep)
 
-  // Eliminar turnos del médico
-  const currentAppointments = appointments.getAll();
-  const filteredAppointments = currentAppointments.filter((a) => a.medicoId !== id);
-  filteredAppointments.forEach((a) => appointments.remove(a.id));
+  }
   //  eliminar al médico
-  return doctors.remove(id);
+  return doctors.remove(numericId);
 };
+export const getAppointmentsByDoctorId = (doctorId) => {
+  return appointments.getAll().filter(a => Number(a.medicoId) === Number(doctorId))
+}
+export const checkIfDuplicateAppointment = ( {doctorId, date, appointmentId}) => {
+  return appointments.getAll().some((ap) => {
+		const existingAppointmentDateTime = dayjs(ap.fechaHora);
+		return (
+			ap.medicoId === Number(doctorId) &&
+			existingAppointmentDateTime.isSame(date) &&
+			ap.id !== appointmentId
+		);
+	});
+}
