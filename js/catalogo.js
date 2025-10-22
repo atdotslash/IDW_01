@@ -1,4 +1,5 @@
 import storageService from './storage/index.js'
+storageService.initialize()
 const medicos = storageService.doctors.getAll()
 const contenedor = document.getElementById("medicosCatalogo");
 
