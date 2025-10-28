@@ -1,7 +1,8 @@
+import { api } from "./api.js";
 import { auth } from "./shared/auth.js";
 import { MESSAGES } from "./shared/constants.js";
-import storageService from "./storage/index.js";
-
+import {disableButton} from './shared/ui.js'
+import storageService from './storage/index.js'
 const ERROR_CONTAINER_CLASS = "alert alert-danger d-none mb-3";
 const UI_SELECTORS = {
 	form: "#formLogin",
@@ -54,9 +55,10 @@ const ui = {
 		const password = domElements.inputs.pass.value;
 		return { username, password };
 	},
+  getSubmitButton: () => domElements.form.querySelector(UI_SELECTORS.submitButton),
 };
 
-const handleLogin = (event) => {
+const handleLogin = async (event) => {
 	event.preventDefault();
 	ui.hideError();
 
@@ -65,18 +67,22 @@ const handleLogin = (event) => {
 	if (!username || !password) {
     return ui.showError(MESSAGES.EMPTY_FIELDS);
 	}
-  const isLogged = storageService.auth.login(username, password)
-	if (isLogged){
-    auth.redirectToAdmin()
-  } else {
+  const {restore: restoreButton} = disableButton(ui.getSubmitButton())
+  try {
+    const user = await api.login({username, password})
+    if (user){
+      storageService.session.set(user)
+      auth.redirectToAdmin()
+    }
+  } catch {
     ui.showError(MESSAGES.INVALID_CREDENTIALS)
+  } finally {
+    restoreButton()
   }
 };
 
 function initLogin() {
-	auth.guestOnly();
 	if (!ui.init()) return;
-
 	domElements.form.addEventListener("submit", handleLogin);
 }
 

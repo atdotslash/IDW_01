@@ -1,10 +1,11 @@
 import { init as initDashboard } from "./views/dashboard.js";
 import storageService from "./storage/index.js";
-import { auth } from "./shared/auth.js";
 import { init as initAppointments } from "./views/appointments.js";
 import { init as initSpecialties } from "./views/specialties.js";
 import { init as initDoctors } from "./views/doctors.js";
 import * as ui from "./core/ui.js";
+import { fullName } from "./shared/formatters.js";
+import { auth } from "./shared/auth.js";
 
 const UI_SELECTORS = {
 	SIDEBAR: "#sidebar",
@@ -147,7 +148,7 @@ function handleNavigation(event) {
 function handleLogout(event) {
 	if (event.target.closest(UI_SELECTORS.LOGOUT_BUTTON)) {
 		event.preventDefault();
-		storageService.auth.logout();
+		storageService.session.clear();
 		auth.redirectToLogin();
 	}
 }
@@ -195,18 +196,18 @@ function setupEventListeners() {
 }
 
 function updateNavbar() {
-	const session = storageService.session.getAdmin();
-	const username = session?.user?.username;
+	const session = storageService.session.get();
 	const divUserInfo = document.getElementById("user-info");
-	if (divUserInfo && username) {
-		divUserInfo.innerHTML = `<i class="fa-solid fa-user me-1"></i>${username}`;
+	if (divUserInfo && session?.user) {
+		const { firstName, lastName, image } = session.user;
+		const formattedName = fullName({ nombre: firstName, apellido: lastName });
+		divUserInfo.innerHTML = `<div><img class="rounded-circle me-1" src="${image}" alt="${formattedName}" width="30" height="30"/>
+      <span>${formattedName}</span>
+    </div>`;
 	}
 }
 
 function initAdminApp() {
-	if (!auth.gatekeep()) {
-		return;
-	}
 	handleInitialLoad();
 	setupEventListeners();
 }

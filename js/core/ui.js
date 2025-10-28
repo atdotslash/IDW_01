@@ -1,4 +1,5 @@
 import { createReusableModal } from "../components/modal.js";
+import { hideFullScreenSpinner, showFullScreenSpinner } from "../components/spinner.js";
 
 export function renderTable(headers, dataRows) {
 	const tableHTML = `
@@ -43,6 +44,17 @@ export function populateSelect({
 export function renderContent(html) {
 	const contentArea = document.getElementById("content");
 	contentArea.innerHTML = html;
+}
+
+export async function showLoadingOverlay({ asyncAction }) {
+      showFullScreenSpinner();
+      try {
+        await asyncAction();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        hideFullScreenSpinner();
+      }
 }
 
 export function showConfirmModal({
