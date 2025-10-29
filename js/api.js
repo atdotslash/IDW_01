@@ -35,42 +35,49 @@ const simulateAsyncRequest = (operation, delay) => {
 	});
 };
 
-export const api = {
-	config: apiConfig,
+const createSimulatedCrud = (storageEntity) => ({
+	getAll: () => simulateAsyncRequest(() => storageEntity.getAll()),
+	getById: (id) => simulateAsyncRequest(() => storageEntity.getById(id)),
+	create: ({ data }) => simulateAsyncRequest(() => storageEntity.add(data)),
+	update: ({ id, data }) =>
+		simulateAsyncRequest(() => storageEntity.update(id, data)),
+	delete: ({ id }) => simulateAsyncRequest(() => storageEntity.remove(id)),
+});
 
-  login:  async ({username, password})=>{
-    const response = await fetch(`${BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username,
-        password
-      }),
-    });
-    return await (response.ok ? response.json() : Promise.reject(response));
-  },
+const http = {
+	login: async ({ username, password }) => {
+		const response = await fetch(`${BASE_URL}/auth/login`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ username, password }),
+		});
+		return response.ok ? response.json() : Promise.reject(response);
+	},
 
-    isAuthenticated: async (token) => {
-      if (!token) {
-          return false;
-      }
+	fetchUsers: async ({ limit = 10, skip = 0 } = {}) => {
+		const response = await fetch(
+			`${BASE_URL}/users?limit=${limit}&skip=${skip}`,
+		);
+		return response.ok ? response.json() : Promise.reject(response);
+	},
 
-      try {
-          const response = await fetch(`${BASE_URL}/auth/me`, {
-              method: 'GET',
-              headers: {
-                  'Authorization': `Bearer ${token}`,
-              },
-          });
-          return response.ok;
-      } catch  {
-          return false;
-      }
-  },
+	validateToken: async (token) => {
+		if (!token) return false;
+		try {
+			const response = await fetch(`${BASE_URL}/auth/me`, {
+				method: "GET",
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			return response.ok;
+		} catch {
+			return false;
+		}
+	},
+};
 
-  fakeLogin: (username, password) => {
+// --- Service simulado (Local Storage) ---
+const simulated = {
+	fakeLogin: (username, password) => {
 		return simulateAsyncRequest(() => {
 			if (
 				username === FAKE_CREDENTIALS.username &&
@@ -83,46 +90,13 @@ export const api = {
 		});
 	},
 
-	getInsuranceCompanies: () => {
-		return simulateAsyncRequest(() =>
-			storageService.insuranceCompanies.getAll(),
-		);
-	},
+	insuranceCompanies: createSimulatedCrud(storageService.insuranceCompanies),
+	doctors: createSimulatedCrud(storageService.doctors),
+	specialties: createSimulatedCrud(storageService.specialties),
+};
 
-	getDoctors: () => {
-		return simulateAsyncRequest(() => storageService.doctors.getAll());
-	},
-
-	getDoctorById: (id) => {
-		return simulateAsyncRequest(() => storageService.doctors.getById(id));
-	},
-	createDoctor: ({ data }) => {
-		return simulateAsyncRequest(() => storageService.doctors.add(data));
-	},
-	updateDoctor: ({ id, data }) => {
-		return simulateAsyncRequest(() => storageService.doctors.update(id, data));
-	},
-	deleteDoctor: ({ id }) =>
-		simulateAsyncRequest(() => storageService.doctors.remove(id)),
-	getSpecialties: () => {
-		return simulateAsyncRequest(() => storageService.specialties.getAll());
-	},
-
-	getSpecialtiesById: (id) => {
-		return simulateAsyncRequest(() => storageService.specialties.getById(id));
-	},
-
-	createSpecialty: ({ data }) => {
-		return simulateAsyncRequest(() => storageService.specialties.add(data));
-	},
-
-	updateSpecialty: ({ id, data }) => {
-		return simulateAsyncRequest(() =>
-			storageService.specialties.update(id, data),
-		);
-	},
-
-	deleteSpecialty: (id) => {
-		return simulateAsyncRequest(() => storageService.specialties.remove(id));
-	},
+export const api = {
+	config: apiConfig,
+	...http,
+	...simulated,
 };

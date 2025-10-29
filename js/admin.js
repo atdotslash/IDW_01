@@ -2,6 +2,7 @@ import { init as initDashboard } from "./views/dashboard.js";
 import storageService from "./storage/index.js";
 import { init as initAppointments } from "./views/appointments.js";
 import { init as initSpecialties } from "./views/specialties.js";
+import { init as initUsers } from "./views/users.js";
 import { init as initDoctors } from "./views/doctors.js";
 import * as ui from "./core/ui.js";
 import { fullName } from "./shared/formatters.js";
@@ -37,6 +38,14 @@ const adminState = {
 					id: "dashboard-section",
 					name: "dashboard",
 					component: initDashboard,
+				},
+			],
+			[
+				"users",
+				{
+					id: "usuarios-section",
+					name: "usuarios",
+					component: initUsers,
 				},
 			],
 			[
@@ -127,7 +136,10 @@ function getSectionIdFromHash() {
 	return navLink?.getAttribute(TARGET_SECTION_ID_ATTRIBUTE) || null;
 }
 
-function handleInitialLoad() {
+ function handleInitialLoad() {
+
+
+
 	storageService.initialize();
 	adminState.ui.sidebar = document.querySelector(UI_SELECTORS.SIDEBAR);
 	adminState.ui.overlay = document.querySelector(UI_SELECTORS.SIDEBAR_OVERLAY);
@@ -207,8 +219,11 @@ function updateNavbar() {
 	}
 }
 
-function initAdminApp() {
-	handleInitialLoad();
+async function initAdminApp() {
+   await ui.showLoadingOverlay({asyncAction:
+      auth.gatekeep()
+    })
+  handleInitialLoad();
 	setupEventListeners();
 }
 

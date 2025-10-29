@@ -1,4 +1,5 @@
 import { api } from "./api.js";
+import { showLoadingOverlay } from "./core/ui.js";
 import { auth } from "./shared/auth.js";
 import { MESSAGES } from "./shared/constants.js";
 import {disableButton} from './shared/ui.js'
@@ -8,7 +9,7 @@ const UI_SELECTORS = {
 	form: "#formLogin",
 	userInput: "#user",
 	passInput: "#pass",
-	submitButton: "#formLogin button[type='submit']",
+	submitButton: `button[type='submit']`,
 };
 const domElements = {
 	form: null,
@@ -81,7 +82,10 @@ const handleLogin = async (event) => {
   }
 };
 
-function initLogin() {
+async function initLogin() {
+   await showLoadingOverlay({asyncAction:
+      auth.guestOnly()
+    })
 	if (!ui.init()) return;
 	domElements.form.addEventListener("submit", handleLogin);
 }

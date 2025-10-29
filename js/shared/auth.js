@@ -23,11 +23,12 @@ export const auth = {
 	gatekeep: async (redirectUrl = PAGES.LOGIN) => {
 			const session = storageService.session.get();
 			const token = session?.user?.accessToken;
-			const isAuthenticated = await api.isAuthenticated(token);
-			if (!isAuthenticated) {
+			const isUserAuthenticated  = await api.validateToken(token);
+			if (!isUserAuthenticated) {
+        storageService.session.clear()
 				auth.redirectTo(redirectUrl);
 			}
-			return isAuthenticated;
+			return isUserAuthenticated;
 	},
 
 	/**
@@ -39,7 +40,7 @@ export const auth = {
 	guestOnly: async (redirectUrl = PAGES.ADMIN) => {
 			const session = storageService.session.get();
 			const token = session?.user?.accessToken;
-			const isAuthenticated = await api.isAuthenticated(token);
+			const isAuthenticated = await api.validateToken(token);
 			if (isAuthenticated) {
 				auth.redirectTo(redirectUrl);
 			}

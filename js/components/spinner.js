@@ -7,10 +7,10 @@ const SPINNER_CLASSES = {
 
 function createSpinner({
 	text = "Cargando...",
-	className = SPINNER_CLASSES.CONTAINER,
+	className
 } = {}) {
 	const container = document.createElement("div");
-	container.className = className;
+	container.className = `${className} ${SPINNER_CLASSES.CONTAINER}`;
 
 	const spinner = document.createElement("div");
 	spinner.className = SPINNER_CLASSES.SPINNER;
