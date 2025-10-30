@@ -210,8 +210,8 @@ function setupEventListeners() {
 function updateNavbar() {
 	const session = storageService.session.get();
 	const divUserInfo = document.getElementById("user-info");
-	if (divUserInfo && session?.user) {
-		const { firstName, lastName, image } = session.user;
+	if (divUserInfo && session) {
+		const { firstName, lastName, image } = session;
 		const formattedName = fullName({ nombre: firstName, apellido: lastName });
 		divUserInfo.innerHTML = `<div><img class="rounded-circle me-1" src="${image}" alt="${formattedName}" width="30" height="30"/>
       <span>${formattedName}</span>

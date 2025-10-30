@@ -1,3 +1,4 @@
+import { MESSAGES } from "./shared/constants.js";
 import storageService from "./storage/index.js";
 
 const BASE_URL = "https://dummyjson.com";
@@ -46,12 +47,16 @@ const createSimulatedCrud = (storageEntity) => ({
 
 const http = {
 	login: async ({ username, password }) => {
-		const response = await fetch(`${BASE_URL}/auth/login`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ username, password }),
-		});
-		return response.ok ? response.json() : Promise.reject(response);
+			const response = await fetch(`${BASE_URL}/auth/login`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ username, password }),
+			});
+			const data = await response.json();
+			if (!response.ok) {
+				throw new Error(data.message || MESSAGES.INVALID_CREDENTIALS);
+			}
+			return { success: true, user: data};
 	},
 
 	fetchUsers: async ({ limit = 10, skip = 0 } = {}) => {

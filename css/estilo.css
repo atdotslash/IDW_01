@@ -681,3 +681,11 @@ button.btn:disabled {
   pointer-events: auto !important;
   cursor: not-allowed !important;
 }
+/* Pagination */
+.pagination {
+  --bs-pagination-color: var(--color-accent) !important;
+  --bs-pagination-active-bg: var(--color-accent) !important;
+  --bs-pagination-hover-color: var(--color-accent-dark) !important;
+  --bs-pagination-hover-bg: var(--color-border) !important;
+
+}

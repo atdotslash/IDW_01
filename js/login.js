@@ -68,15 +68,15 @@ const handleLogin = async (event) => {
 	if (!username || !password) {
     return ui.showError(MESSAGES.EMPTY_FIELDS);
 	}
-  const {restore: restoreButton} = disableButton(ui.getSubmitButton())
+  const {restore: restoreButton} = disableButton(ui.getSubmitButton(), "Ingresando...")
   try {
-    const user = await api.login({username, password})
-    if (user){
+    const {user,success} = await api.login({username, password})
+    if (success){
       storageService.session.set(user)
       auth.redirectToAdmin()
     }
-  } catch {
-    ui.showError(MESSAGES.INVALID_CREDENTIALS)
+  } catch (error) {
+    ui.showError(error.message)
   } finally {
     restoreButton()
   }

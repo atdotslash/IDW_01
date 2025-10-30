@@ -3,10 +3,10 @@ import { getData, removeData, saveData } from "./utils.js";
 
 // --- Funciones de Sesión ---
 export const session = {
-  set: ({ accessToken, firstName, lastName, image }) =>
+  set: ({ accessToken, firstName, lastName, image, id }) =>
     saveData({
       key: SESSION_KEY,
-      data: { user: {accessToken, firstName, lastName, image} },
+      data: {accessToken, firstName, lastName, id, image} ,
       storageType: "sessionStorage",
     }),
   get: () => getData({ key: SESSION_KEY, storageType: "sessionStorage" }),
