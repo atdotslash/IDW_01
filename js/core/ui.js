@@ -101,7 +101,7 @@ export function showConfirmModal({
 	confirmButtonText = CONFIRM_MODAL_DEFAULTS.CONFIRM_BUTTON_TEXT,
 	cancelButtonText = CONFIRM_MODAL_DEFAULTS.CANCEL_BUTTON_TEXT,
 }) {
-	const confirmModal = createReusableModal({
+	createReusableModal({
 		title: title,
 		body: `<p>${message}</p>`,
 		footerButtons: [
@@ -109,19 +109,24 @@ export function showConfirmModal({
 				text: cancelButtonText,
 				className: CONFIRM_MODAL_DEFAULTS.CANCEL_BUTTON_CLASS,
 				onClick: (_, modal) => {
-					onCancel();
-					modal.hide();
+          try {
+            onCancel();
+          } finally {
+            modal.hide();
+          }
 				},
 			},
 			{
 				text: confirmButtonText,
 				className: CONFIRM_MODAL_DEFAULTS.CONFIRM_BUTTON_CLASS,
 				onClick: (_, modal) => {
-					onConfirm();
-					modal.hide();
+           try {
+            onConfirm();
+          } finally {
+            modal.hide();
+          }
 				},
 			},
 		],
 	});
-	return confirmModal;
 }

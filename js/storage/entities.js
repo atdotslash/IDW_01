@@ -28,6 +28,15 @@ export const createSpecialty = (newData) => {
   return specialties.add(newData);
 }
 
+export const createInsuranceCompany = (newData) => {
+  const allInsuranceCompany = insuranceCompanies.getAll();
+  const isNameTaken = allInsuranceCompany.some((s) => s.nombre.toLowerCase() === newData.nombre.toLowerCase());
+  if (isNameTaken) {
+    throw new Error(`El nombre de la obra social ya existe`);
+  }
+  return insuranceCompanies.add(newData);
+}
+
 
 export const deleteSpecialty = (id) => {
   const allDoctors = doctors.getAll();

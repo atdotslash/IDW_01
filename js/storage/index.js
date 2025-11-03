@@ -16,6 +16,7 @@ import {
 	createSpecialty,
 	getAppointmentsByDoctorId,
 	checkIfDuplicateAppointment,
+  createInsuranceCompany,
 } from "./entities.js";
 import { session } from "./session.js";
 
@@ -52,7 +53,10 @@ const storageService = {
 		remove: deleteSpecialty,
 		add: createSpecialty,
 	},
-	insuranceCompanies,
+	insuranceCompanies: {
+    ...insuranceCompanies,
+    add: createInsuranceCompany
+  },
 	doctors: {
 		...doctors,
 		remove: deleteDoctor,

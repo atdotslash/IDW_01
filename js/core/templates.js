@@ -101,7 +101,7 @@ export function createDoctorForm(doctor = {}, specialties = [], insuranceCompani
 }
 
 export function createSpecialtyForm(specialty = {}) {
-	const form = renderForm(
+	return renderForm(
 		[
 			{
 				name: "nombre",
@@ -113,7 +113,26 @@ export function createSpecialtyForm(specialty = {}) {
 		],
 		specialty,
 	);
-	return form;
+}
+
+export function createInsuranceCompanyForm(insuranceCompany = {}) {
+	return renderForm(
+		[
+      {
+        name: "nombre",
+        label: "Nombre",
+        type: "text",
+        validationMessage: "El nombre es obligatorio",
+        required: true,
+      },
+      {
+        name: "descripcion",
+        label: "Descripcion",
+        type: "text",
+      },
+    ],
+		insuranceCompany,
+	);
 }
 
 export function createSpecialtyRow(specialty) {
@@ -132,6 +151,27 @@ export function createSpecialtyRow(specialty) {
     </tr>
   `;
 }
+
+export function createInsuranceCompanyRow(insuranceCompany) {
+	return `
+    <tr data-id="${insuranceCompany.id}">
+      <td>${insuranceCompany.id}</td>
+      <td>${insuranceCompany.nombre}</td>
+      <td>${insuranceCompany.descripcion}</td>
+      <td>
+        <div class="d-flex gap-2 align-items-center h-100 align-middle">
+            <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${insuranceCompany.id}">
+            <i class="fa-solid fa-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${insuranceCompany.id}">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
 export function createUserRow(user) {
 	return `
     <tr data-id="${user.id}">
