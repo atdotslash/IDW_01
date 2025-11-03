@@ -1,4 +1,4 @@
-import { api } from "../api.js";
+import {  apiService } from "../api.js";
 import storageService from "../storage/index.js";
 import { PAGES } from "./constants.js";
 
@@ -23,7 +23,7 @@ export const auth = {
 	gatekeep: async (redirectUrl = PAGES.LOGIN) => {
 			const session = storageService.session.get();
 			const token = session?.accessToken;
-			const isUserAuthenticated  = await api.validateToken(token);
+			const isUserAuthenticated  = await apiService.validateToken(token);
 			if (!isUserAuthenticated) {
         storageService.session.clear()
 				auth.redirectTo(redirectUrl);

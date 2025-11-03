@@ -1,4 +1,4 @@
-import { api } from "./api.js";
+import {  apiService } from "./api.js";
 import { showLoadingOverlay } from "./core/ui.js";
 import { auth } from "./shared/auth.js";
 import { MESSAGES } from "./shared/constants.js";
@@ -70,7 +70,7 @@ const handleLogin = async (event) => {
 	}
   const {restore: restoreButton} = disableButton(ui.getSubmitButton(), "Ingresando...")
   try {
-    const {user,success} = await api.login({username, password})
+    const {user,success} = await apiService.login({username, password})
     if (success){
       storageService.session.set(user)
       auth.redirectToAdmin()
