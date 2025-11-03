@@ -2,7 +2,7 @@ import { init as initDashboard } from "./views/dashboard.js";
 import storageService from "./storage/index.js";
 import { init as initAppointments } from "./views/appointments.js";
 import { init as initSpecialties } from "./views/specialties.js";
-import { init as initUsers } from "./views/users.js";
+import  initUsers  from "./views/users.js";
 import { init as initDoctors } from "./views/doctors.js";
 import * as ui from "./core/ui.js";
 import { fullName } from "./shared/formatters.js";
