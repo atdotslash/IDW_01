@@ -2,7 +2,6 @@ export function disableButton(button, loadingText = 'Procesando...') {
   if (!button) return {
     restore: () => { }
   };
-
   const state = {
     button,
     originalText: button.innerHTML,
@@ -40,34 +39,4 @@ function createButtonSpinner(text) {
   container.appendChild(textNode);
 
   return container;
-}
-
-
-export function disableForm(form) {
-  if (!form) return { restore: () => { } };
-
-  const inputs = form.querySelectorAll('input, select, textarea, button');
-  const states = Array.from(inputs).map(input => ({
-    element: input,
-    disabled: input.disabled
-  }));
-
-  // Deshabilitar todos los inputs
-  inputs.forEach(input => {
-    input.disabled = true;
-  });
-
-  // Agregar clase de carga
-  // form.classList.add('form-loading');
-
-  return {
-    restore: () => {
-      states.forEach(state => {
-        if (state.element) {
-          state.element.disabled = state.disabled;
-        }
-      });
-      // form.classList.remove('form-loading');
-    }
-  };
 }

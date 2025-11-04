@@ -7,10 +7,10 @@ const SPINNER_CLASSES = {
 
 function createSpinner({
 	text = "Cargando...",
-	className = SPINNER_CLASSES.CONTAINER,
+	className
 } = {}) {
 	const container = document.createElement("div");
-	container.className = className;
+	container.className = `${className} ${SPINNER_CLASSES.CONTAINER}`;
 
 	const spinner = document.createElement("div");
 	spinner.className = SPINNER_CLASSES.SPINNER;
@@ -46,4 +46,42 @@ export function replaceContentWithSpinner(container, options) {
 			}
 		},
 	};
+}
+
+const FULLSCREEN_SPINNER_ID = 'fullscreen-spinner';
+const OVERLAY_CLASSES =   "d-flex align-items-center justify-content-center position-fixed top-0 start-0 w-100 h-100"
+function createOverlay({id, className = OVERLAY_CLASSES} = {}) {
+  const overlay = document.createElement('div');
+    overlay.id = id;
+    overlay.className = className
+    overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+    overlay.style.zIndex = '9999';
+    return overlay;
+}
+
+
+function createFullScreenSpinner() {
+    const existingSpinner = document.getElementById(FULLSCREEN_SPINNER_ID);
+    if (existingSpinner) {
+        return existingSpinner;
+    }
+
+    const overlay = createOverlay({id: FULLSCREEN_SPINNER_ID})
+
+    const spinner = createSpinner({ text: 'Verificando...', className: 'text-primary' });
+
+    overlay.appendChild(spinner);
+    return overlay;
+}
+
+export function showFullScreenSpinner() {
+    const spinner = createFullScreenSpinner();
+    document.body.appendChild(spinner);
+}
+
+export function hideFullScreenSpinner() {
+    const spinner = document.getElementById(FULLSCREEN_SPINNER_ID);
+    if (spinner) {
+        spinner.remove();
+    }
 }

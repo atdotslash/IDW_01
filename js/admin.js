@@ -1,10 +1,12 @@
 import { init as initDashboard } from "./views/dashboard.js";
 import storageService from "./storage/index.js";
-import { auth } from "./shared/auth.js";
 import { init as initAppointments } from "./views/appointments.js";
 import { init as initSpecialties } from "./views/specialties.js";
+import  initUsers  from "./views/users.js";
 import { init as initDoctors } from "./views/doctors.js";
 import * as ui from "./core/ui.js";
+import { fullName } from "./shared/formatters.js";
+import { auth } from "./shared/auth.js";
 
 const UI_SELECTORS = {
 	SIDEBAR: "#sidebar",
@@ -36,6 +38,14 @@ const adminState = {
 					id: "dashboard-section",
 					name: "dashboard",
 					component: initDashboard,
+				},
+			],
+			[
+				"users",
+				{
+					id: "usuarios-section",
+					name: "usuarios",
+					component: initUsers,
 				},
 			],
 			[
@@ -126,7 +136,10 @@ function getSectionIdFromHash() {
 	return navLink?.getAttribute(TARGET_SECTION_ID_ATTRIBUTE) || null;
 }
 
-function handleInitialLoad() {
+ function handleInitialLoad() {
+
+
+
 	storageService.initialize();
 	adminState.ui.sidebar = document.querySelector(UI_SELECTORS.SIDEBAR);
 	adminState.ui.overlay = document.querySelector(UI_SELECTORS.SIDEBAR_OVERLAY);
@@ -147,7 +160,7 @@ function handleNavigation(event) {
 function handleLogout(event) {
 	if (event.target.closest(UI_SELECTORS.LOGOUT_BUTTON)) {
 		event.preventDefault();
-		storageService.auth.logout();
+		storageService.session.clear();
 		auth.redirectToLogin();
 	}
 }
@@ -195,19 +208,22 @@ function setupEventListeners() {
 }
 
 function updateNavbar() {
-	const session = storageService.session.getAdmin();
-	const username = session?.user?.username;
+	const session = storageService.session.get();
 	const divUserInfo = document.getElementById("user-info");
-	if (divUserInfo && username) {
-		divUserInfo.innerHTML = `<i class="fa-solid fa-user me-1"></i>${username}`;
+	if (divUserInfo && session) {
+		const { firstName, lastName, image } = session;
+		const formattedName = fullName({ nombre: firstName, apellido: lastName });
+		divUserInfo.innerHTML = `<div><img class="rounded-circle me-1" src="${image}" alt="${formattedName}" width="30" height="30"/>
+      <span>${formattedName}</span>
+    </div>`;
 	}
 }
 
-function initAdminApp() {
-	if (!auth.gatekeep()) {
-		return;
-	}
-	handleInitialLoad();
+async function initAdminApp() {
+   await ui.showLoadingOverlay({asyncAction:
+      auth.gatekeep()
+    })
+  handleInitialLoad();
 	setupEventListeners();
 }
 

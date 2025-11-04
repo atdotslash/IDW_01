@@ -132,6 +132,25 @@ export function createSpecialtyRow(specialty) {
     </tr>
   `;
 }
+export function createUserRow(user) {
+	return `
+    <tr data-id="${user.id}">
+      <td>${user.id}</td>
+      <td>${user.firstName}</td>
+      <td>${user.lastName}</td>
+      <td>${user.email}</td>
+      <td>${user.username}</td>
+    </tr>
+  `;
+}
+
+export function createUserSkeletonRow() {
+	return `
+    <tr>
+      ${Array.from({length: 5}).fill(null).map(() => '<td class="placeholder-glow"><span class="placeholder col-12"></span></td>').join('')}
+    </tr>
+  `;
+}
 
 export function createAppointmentForm(appointment = {}) {
   const today = dayjs().format("YYYY-MM-DD");

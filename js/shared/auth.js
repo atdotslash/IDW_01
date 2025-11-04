@@ -1,7 +1,10 @@
+import {  apiService } from "../api.js";
 import storageService from "../storage/index.js";
 import { PAGES } from "./constants.js";
 
-const hasSession = () => !!storageService.session.getAdmin();
+const hasSession = () => !!storageService.session.get();
+
+
 
 export const auth = {
 	redirectTo: (page) => {
@@ -17,12 +20,15 @@ export const auth = {
 	 * @param {string} [redirectUrl=PAGES.LOGIN] - La URL a la que redirigir si no está autenticado.
 	 * @returns {boolean} True si el usuario está autenticado, false de lo contrario.
 	 */
-	gatekeep: (redirectUrl = PAGES.LOGIN) => {
-		const sessionExists = hasSession();
-		if (!sessionExists) {
-			auth.redirectTo(redirectUrl);
-		}
-		return sessionExists;
+	gatekeep: async (redirectUrl = PAGES.LOGIN) => {
+			const session = storageService.session.get();
+			const token = session?.accessToken;
+			const isUserAuthenticated  = await apiService.validateToken(token);
+			if (!isUserAuthenticated) {
+        storageService.session.clear()
+				auth.redirectTo(redirectUrl);
+			}
+			return isUserAuthenticated;
 	},
 
 	/**
@@ -31,11 +37,12 @@ export const auth = {
 	 * @param {string} [redirectUrl=PAGES.ADMIN] - La URL a la que redirigir si está autenticado.
 	 * @returns {boolean} True si el usuario es invitado (no hay sesión), false de lo contrario.
 	 */
-	guestOnly: (redirectUrl = PAGES.ADMIN) => {
-		const sessionExists = hasSession();
-		if (sessionExists) {
-			auth.redirectTo(redirectUrl);
-		}
-		return !sessionExists;
+	guestOnly: async (redirectUrl = PAGES.ADMIN) => {
+			const session = storageService.session.get();
+			const hasToken = session?.accessToken;
+			if (hasToken) {
+				auth.redirectTo(redirectUrl);
+			}
+			return !hasToken;
 	},
 };
