@@ -3,7 +3,8 @@ import storageService from "./storage/index.js";
 import { init as initAppointments } from "./views/appointments.js";
 import { init as initSpecialties } from "./views/specialties.js";
 import  initUsers  from "./views/users.js";
-import { init as initDoctors } from "./views/doctors.js";
+import initDoctors  from "./views/doctors.js";
+import initInsuranceCompanies  from "./views/insurance-companies.js";
 import * as ui from "./core/ui.js";
 import { fullName } from "./shared/formatters.js";
 import { auth } from "./shared/auth.js";
@@ -59,6 +60,10 @@ const adminState = {
 			[
 				"doctors",
 				{ id: "medicos-section", name: "medicos", component: initDoctors },
+			],
+			[
+				"insuranceCompanies",
+				{ id: "obras-sociales-section", name: "obra-sociales", component: initInsuranceCompanies },
 			],
 			[
 				"appointments",
@@ -137,9 +142,6 @@ function getSectionIdFromHash() {
 }
 
  function handleInitialLoad() {
-
-
-
 	storageService.initialize();
 	adminState.ui.sidebar = document.querySelector(UI_SELECTORS.SIDEBAR);
 	adminState.ui.overlay = document.querySelector(UI_SELECTORS.SIDEBAR_OVERLAY);

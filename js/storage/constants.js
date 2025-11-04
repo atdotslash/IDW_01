@@ -27,18 +27,25 @@ export const INITIAL_DATA = {
       id: 1,
       nombre: "OSDE",
       descripcion: "Organización de Servicios Directos Empresarios",
+      porcentaje: 10
     },
-    { id: 2, nombre: "Swiss Medical", descripcion: "Swiss Medical Group" },
-    { id: 3, nombre: "Galeno", descripcion: "Galeno Argentina" },
+    { id: 2, nombre: "Swiss Medical", descripcion: "Swiss Medical Group",
+      porcentaje: 10
+     },
+    { id: 3, nombre: "Galeno", descripcion: "Galeno Argentina",
+      porcentaje: 10
+     },
     {
       id: 4,
       nombre: "IOMA",
       descripcion: "Instituto de Obra Médico Asistencial",
+      porcentaje: 10
     },
     {
       id: 5,
       nombre: "Particular",
       descripcion: "Sin obra social - Pago particular",
+      porcentaje: 10
     },
   ],
   medicos: [

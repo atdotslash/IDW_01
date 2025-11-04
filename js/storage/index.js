@@ -1,49 +1,43 @@
-import { removeData, saveData, getData } from "./utils.js";
+import { DB_KEY, INITIAL_DATA, SESSION_KEY } from "./constants.js";
 import {
-	DB_KEY,
-	INITIAL_DATA,
-	SESSION_KEY,
-} from "./constants.js";
-import {
-	specialties,
-	deleteSpecialty,
-	deleteDoctor,
-	insuranceCompanies,
-	doctors,
 	appointments,
-	reservations,
-	createDoctor,
-	createSpecialty,
-	getAppointmentsByDoctorId,
 	checkIfDuplicateAppointment,
+	createDoctor,
+	createInsuranceCompany,
+	createSpecialty,
+	deleteDoctor,
+	deleteSpecialty,
+	doctors,
+	getAppointmentsByDoctorId,
+	insuranceCompanies,
+	reservations,
+	specialties,
+	updateInsuranceCompany,
+  updateSpecialty,
 } from "./entities.js";
 import { session } from "./session.js";
+import { getData, removeData, saveData } from "./utils.js";
 
 const initializeData = () => {
 	if (localStorage.getItem(DB_KEY)) {
 		return;
 	}
-	saveData(DB_KEY, INITIAL_DATA);
+	saveData({ key: DB_KEY, data: INITIAL_DATA });
 };
-
-
 
 // --- Funciones de Utilidad ---
 const utils = {
 	clearAllData: () => {
-		removeData(DB_KEY);
-		removeData(SESSION_KEY);
+		removeData({ key: DB_KEY });
+		removeData({ key: SESSION_KEY });
 	},
 	exportData: () => {
-		return getData(DB_KEY) || {};
+		return getData({ key: DB_KEY }) || {};
 	},
 	importData: (data) => {
-		saveData(DB_KEY, data);
+		saveData({ key: DB_KEY, data });
 	},
 };
-
-
-
 
 const storageService = {
 	initialize: initializeData,
@@ -51,8 +45,13 @@ const storageService = {
 		...specialties,
 		remove: deleteSpecialty,
 		add: createSpecialty,
+    update: updateSpecialty
 	},
-	insuranceCompanies,
+	insuranceCompanies: {
+		...insuranceCompanies,
+		add: createInsuranceCompany,
+		update: updateInsuranceCompany,
+	},
 	doctors: {
 		...doctors,
 		remove: deleteDoctor,

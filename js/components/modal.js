@@ -48,7 +48,7 @@ export function createReusableModal({
 		);
 	}
 
-	const modalInstance = new window.bootstrap.Modal(modalElement, {
+	const modalInstance =  window.bootstrap.Modal.getOrCreateInstance(modalElement, {
 		backdrop: "static",
 	});
 	const buttonHandlers = [];
@@ -74,8 +74,8 @@ export function createReusableModal({
 			element?.removeEventListener("click", handler);
 		});
 		modalElement.removeEventListener("shown.bs.modal", handleShown);
-		modalInstance.dispose();
 		modalElement.remove();
+		modalInstance.dispose();
 	};
 
 	function handleShown() {

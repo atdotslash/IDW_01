@@ -3,6 +3,7 @@ import {
 	hideFullScreenSpinner,
 	showFullScreenSpinner,
 } from "../components/spinner.js";
+import notifications from '../components/notifications.js';
 
 const CONFIRM_MODAL_DEFAULTS = {
 	TITLE: "Confirmar eliminación",
@@ -101,7 +102,7 @@ export function showConfirmModal({
 	confirmButtonText = CONFIRM_MODAL_DEFAULTS.CONFIRM_BUTTON_TEXT,
 	cancelButtonText = CONFIRM_MODAL_DEFAULTS.CANCEL_BUTTON_TEXT,
 }) {
-	const confirmModal = createReusableModal({
+	createReusableModal({
 		title: title,
 		body: `<p>${message}</p>`,
 		footerButtons: [
@@ -109,19 +110,52 @@ export function showConfirmModal({
 				text: cancelButtonText,
 				className: CONFIRM_MODAL_DEFAULTS.CANCEL_BUTTON_CLASS,
 				onClick: (_, modal) => {
-					onCancel();
-					modal.hide();
+          try {
+            onCancel();
+          } finally {
+            modal.hide();
+          }
 				},
 			},
 			{
 				text: confirmButtonText,
 				className: CONFIRM_MODAL_DEFAULTS.CONFIRM_BUTTON_CLASS,
 				onClick: (_, modal) => {
-					onConfirm();
-					modal.hide();
+           try {
+            onConfirm();
+          } finally {
+            modal.hide();
+          }
 				},
 			},
 		],
 	});
-	return confirmModal;
+}
+
+export function handleSaveError({ error, form, isEditing, entityName, fieldName = 'nombre' }) {
+  const fieldInput = form.querySelector(`[name='${fieldName}']`);
+
+  if (fieldInput && error.message.toLowerCase().includes(fieldName.toLowerCase())) {
+    fieldInput.setCustomValidity(error.message);
+    const feedbackDiv = fieldInput.parentElement.querySelector('.invalid-feedback');
+    if (feedbackDiv) {
+      feedbackDiv.textContent = error.message;
+    }
+    return;
+  }
+
+  notifications.error(
+    error.message ||
+      `Error al ${isEditing ? 'actualizar' : 'crear'} ${entityName.toLowerCase()}`,
+  );
+}
+
+export function validateForm(form) {
+  form.classList.add('was-validated');
+
+  form.querySelectorAll('input, textarea, select').forEach((input) => {
+    input.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+  });
+
+  return form.checkValidity();
 }
