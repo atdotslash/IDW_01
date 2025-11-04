@@ -16,7 +16,7 @@ const config = {
   TABLE_BODY: 'obra-sociales-table-body',
   PAGINATION_CONTAINER: 'pagination-container',
   ITEMS_PER_PAGE: 3,
-  HEADERS: ['#', 'Nombre', 'Descripcion', 'Acciones'],
+  HEADERS: ['#', 'Nombre', 'Descripcion', "Cobertura", 'Acciones'],
 };
 
 const SELECTORS = {
@@ -127,26 +127,7 @@ function loadInsuranceCompanies(page = 1) {
   }
 }
 
-function validateForm(form, nameInput) {
-  nameInput?.setCustomValidity('');
-  form?.classList.add('was-validated');
-  return form.checkValidity();
-}
-function handleSaveError(error, nameInput, isEditing) {
-  if (nameInput && error.message.toLowerCase().includes('nombre')) {
-    nameInput.setCustomValidity(error.message);
-    const feedbackDiv = nameInput.parentElement.querySelector('.invalid-feedback');
-    if (feedbackDiv) {
-      feedbackDiv.textContent = error.message;
-    }
-    return;
-  }
 
-  notifications.error(
-    error.message ||
-      `Error al ${isEditing ? 'actualizar' : 'crear'} la ${config.ENTITY_NAME.toLowerCase()}.`,
-  );
-}
 
 function persistInsuranceCompany(isEditing, insuranceCompanyId, formData) {
   if (isEditing) {
@@ -160,16 +141,21 @@ function persistInsuranceCompany(isEditing, insuranceCompanyId, formData) {
 }
 
 function handleSaveInsuranceCompany({ form, insuranceCompany = {}, modal }) {
-  const nameInput = form.querySelector(`[name='nombre']`);
-  if (!validateForm(form, nameInput)) return;
+  if (!ui.validateForm(form)) return;
   const formData = getFormData(form);
   const isEditing = Boolean(insuranceCompany.id);
   try {
+    formData.porcentaje = parseFloat(formData.porcentaje);
     persistInsuranceCompany(isEditing, insuranceCompany.id, formData);
     loadInsuranceCompanies();
     modal.hide();
   } catch (error) {
-    handleSaveError(error, nameInput, isEditing);
+    ui.handleSaveError({
+      error,
+      form,
+      isEditing,
+      entityName: config.ENTITY_NAME,
+    });
   }
 }
 
