@@ -219,7 +219,7 @@ function updateNavbar() {
 	const divUserInfo = document.getElementById("user-info");
 	if (divUserInfo && session) {
 		const { firstName, lastName, image } = session;
-		const formattedName = fullName({ nombre: firstName, apellido: lastName });
+		const formattedName = fullName({firstName,lastName}, 'firstName', 'lastName');
 		divUserInfo.innerHTML = `<div><img class="rounded-circle me-1" src="${image}" alt="${formattedName}" width="30" height="30"/>
       <span>${formattedName}</span>
     </div>`;
