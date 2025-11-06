@@ -10,7 +10,7 @@ import {
 	doctors,
 	getAppointmentsByDoctorId,
 	insuranceCompanies,
-	reservations,
+	bookings,
 	specialties,
 	updateInsuranceCompany,
   updateSpecialty,
@@ -62,7 +62,7 @@ const storageService = {
 		getByDoctorId: getAppointmentsByDoctorId,
 		checkIfDuplicated: checkIfDuplicateAppointment,
 	},
-	reservations,
+	bookings,
 	session,
 	utils,
 };

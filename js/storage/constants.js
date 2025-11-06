@@ -12,7 +12,7 @@ export const STORAGE_KEYS = Object.freeze({
   insuranceCompanies: "obrasSociales",
   doctors: "medicos",
   appointments: "turnos",
-  reservations: "reservas",
+  bookings: "reservas",
 });
 
 export const INITIAL_DATA = {
@@ -80,7 +80,80 @@ export const INITIAL_DATA = {
       obraSocialIds: [2, 4, 5],
     },
   ],
-  reservas: [],
+  reservas: [
+    {
+      id: 1,
+      documento: "AB123456",
+      paciente: "Gómez, María",
+      turnoId: 2,
+      especialidadId: 1,
+      obraSocialId: 1,
+      valorTotal: 7650
+    },
+    {
+      id: 2,
+      documento: "CD789012",
+      paciente: "López, Carlos",
+      turnoId: 4,
+      especialidadId: 1,
+      obraSocialId: 2,
+      valorTotal: 7650
+    },
+    {
+      id: 3,
+      documento: "34567890",
+      paciente: "Martínez, Ana",
+      turnoId: 13,
+      especialidadId: 1,
+      obraSocialId: 5,
+      valorTotal: 8500
+    },
+    {
+      id: 4,
+      documento: "EF345678",
+      paciente: "Rodríguez, Pedro",
+      turnoId: 18,
+      especialidadId: 1,
+      obraSocialId: 4,
+      valorTotal: 7650
+    },
+    {
+      id: 5,
+      documento: "90123456",
+      paciente: "Fernández, Laura",
+      turnoId: 25,
+      especialidadId: 1,
+      obraSocialId: 3,
+      valorTotal: 7650
+    },
+    {
+      id: 6,
+      documento: "GH901234",
+      paciente: "Díaz, Roberto",
+      turnoId: 32,
+      especialidadId: 1,
+      obraSocialId: 1,
+      valorTotal: 7650
+    },
+    {
+      id: 7,
+      documento: "56789012",
+      paciente: "Pérez, Sofía",
+      turnoId: 39,
+      especialidadId: 1,
+      obraSocialId: 2,
+      valorTotal: 7650
+    },
+    {
+      id: 8,
+      documento: "IJ567890",
+      paciente: "Silva, Diego",
+      turnoId: 46,
+      especialidadId: 1,
+      obraSocialId: 5,
+      valorTotal: 8500
+    }
+  ],
   turnos: [
     { medicoId: 1, fechaHora: "2025-12-01T12:00:00.000Z", disponible: true, id: 1 },
     { medicoId: 1, fechaHora: "2025-12-01T12:30:00.000Z", disponible: false, id: 2 },

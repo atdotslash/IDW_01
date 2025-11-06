@@ -5,6 +5,7 @@ import { init as initSpecialties } from "./views/specialties.js";
 import  initUsers  from "./views/users.js";
 import initDoctors  from "./views/doctors.js";
 import initInsuranceCompanies  from "./views/insurance-companies.js";
+import initAdminBookings  from "./views/admin-bookings.js";
 import * as ui from "./core/ui.js";
 import { fullName } from "./shared/formatters.js";
 import { auth } from "./shared/auth.js";
@@ -68,6 +69,10 @@ const adminState = {
 			[
 				"appointments",
 				{ id: "turnos-section", name: "turnos", component: initAppointments },
+			],
+			[
+				"bookings",
+				{ id: "reservas-section", name: "reservas", component: initAdminBookings },
 			],
 		]),
 	},

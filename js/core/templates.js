@@ -1,4 +1,6 @@
 import { renderForm } from '../components/form.js';
+import { formatCurrency, fullName } from '../shared/formatters.js';
+import storageService from '../storage/index.js';
 
 export function createStatCard({ title, iconClass, value, href, selectorId }) {
   return `
@@ -208,12 +210,31 @@ export function createInsuranceCompanyRow(insuranceCompany) {
 
 export function createUserRow(user) {
   return `
-    <tr data-id="${user.id}">
+    <tr>
       <td>${user.id}</td>
       <td>${user.firstName}</td>
       <td>${user.lastName}</td>
       <td>${user.email}</td>
       <td>${user.username}</td>
+    </tr>
+  `;
+}
+
+export function createBookingRow(booking) {
+  const appointment = storageService.appointments.getById(booking.turnoId);
+  const doctor = storageService.doctors.getById(appointment.medicoId);
+  const insuranceCompany = storageService.insuranceCompanies.getById(booking.obraSocialId);
+  const specialty = storageService.specialties.getById(doctor.especialidadId);
+  return `
+    <tr>
+      <td>${booking.id}</td>
+      <td>${booking.documento}</td>
+      <td>${booking.paciente}</td>
+      <td>${insuranceCompany.nombre}</td>
+      <td>${dayjs(appointment.fechaHora).format('DD/MM/YYYY HH:mm [hs]')}</td>
+      <td>${fullName(doctor)}</td>
+      <td>${specialty.nombre}</td>
+      <td>${formatCurrency(booking.valorTotal)}</td>
     </tr>
   `;
 }
