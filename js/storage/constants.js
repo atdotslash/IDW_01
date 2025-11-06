@@ -1,5 +1,6 @@
-export const DB_KEY = 'idwData';
-export const SESSION_KEY = 'idwSession';
+export const DB_KEY = "idwData";
+export const SESSION_KEY = "idwSession";
+export const SESSION_APPOINTMENT_DATA_KEY = "appointmentData";
 
 export const FAKE_AUTH_CREDENTIALS = {
   username: "admin",
@@ -27,46 +28,41 @@ export const INITIAL_DATA = {
       id: 1,
       nombre: "OSDE",
       descripcion: "Organización de Servicios Directos Empresarios",
-      porcentaje: 10
+      porcentaje: 10,
     },
-    { id: 2, nombre: "Swiss Medical", descripcion: "Swiss Medical Group",
-      porcentaje: 10
-     },
-    { id: 3, nombre: "Galeno", descripcion: "Galeno Argentina",
-      porcentaje: 10
-     },
+    { id: 2, nombre: "Swiss Medical", descripcion: "Swiss Medical Group", porcentaje: 10 },
+    { id: 3, nombre: "Galeno", descripcion: "Galeno Argentina", porcentaje: 10 },
     {
       id: 4,
       nombre: "IOMA",
       descripcion: "Instituto de Obra Médico Asistencial",
-      porcentaje: 10
+      porcentaje: 10,
     },
     {
       id: 5,
       nombre: "Particular",
       descripcion: "Sin obra social - Pago particular",
-      porcentaje: 10
+      porcentaje: 10,
     },
   ],
   medicos: [
     {
       id: 1,
-      nombre: "Carlos",
+      nombre: "Carla",
       apellido: "Rodríguez",
       matriculaProfesional: 12345,
-      descripcion:
-        "Especialista en cardiología con más de 15 años de experiencia...",
+      descripcion: "Especialista en cardiología con más de 15 años de experiencia...",
       foto: "https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
       valorConsulta: 8500,
       especialidadId: 1,
       obraSocialIds: [1, 2, 5],
-    },    {
+    },
+    {
       id: 2,
       nombre: "Laura",
       apellido: "Gómez",
       matriculaProfesional: 67890,
-      descripcion:
-        "Dermatóloga con enfoque en tratamientos estéticos y enfermedades de la piel.",
+      descripcion: "Dermatóloga con enfoque en tratamientos estéticos y enfermedades de la piel.",
       foto: "https://images.pexels.com/photos/7089020/pexels-photo-7089020.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
       valorConsulta: 7000,
       especialidadId: 2,
@@ -77,15 +73,69 @@ export const INITIAL_DATA = {
       nombre: "Roberto",
       apellido: "Fernández",
       matriculaProfesional: 11223,
-      descripcion:
-        "Neurólogo dedicado al estudio y tratamiento de trastornos del sistema nervioso.",
+      descripcion: "Neurólogo dedicado al estudio y tratamiento de trastornos del sistema nervioso.",
       foto: "https://images.pexels.com/photos/6129507/pexels-photo-6129507.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
       valorConsulta: 9000,
       especialidadId: 3,
       obraSocialIds: [2, 4, 5],
     },
-
   ],
   reservas: [],
-  turnos: []
+  turnos: [
+    { medicoId: 1, fechaHora: "2025-12-01T12:00:00.000Z", disponible: true, id: 1 },
+    { medicoId: 1, fechaHora: "2025-12-01T12:30:00.000Z", disponible: false, id: 2 },
+    { medicoId: 1, fechaHora: "2025-12-01T13:00:00.000Z", disponible: true, id: 3 },
+    { medicoId: 1, fechaHora: "2025-12-01T13:30:00.000Z", disponible: false, id: 4 },
+    { medicoId: 1, fechaHora: "2025-12-01T14:00:00.000Z", disponible: true, id: 5 },
+    { medicoId: 1, fechaHora: "2025-12-01T14:30:00.000Z", disponible: true, id: 6 },
+    { medicoId: 1, fechaHora: "2025-12-01T15:00:00.000Z", disponible: true, id: 7 },
+    { medicoId: 1, fechaHora: "2025-12-01T15:30:00.000Z", disponible: true, id: 8 },
+    { medicoId: 1, fechaHora: "2025-12-01T16:00:00.000Z", disponible: true, id: 9 },
+    { medicoId: 1, fechaHora: "2025-12-01T16:30:00.000Z", disponible: true, id: 10 },
+    { medicoId: 1, fechaHora: "2025-12-01T17:00:00.000Z", disponible: true, id: 11 },
+    { medicoId: 1, fechaHora: "2025-12-02T12:00:00.000Z", disponible: true, id: 12 },
+    { medicoId: 1, fechaHora: "2025-12-02T12:30:00.000Z", disponible: true, id: 13 },
+    { medicoId: 1, fechaHora: "2025-12-02T13:00:00.000Z", disponible: true, id: 14 },
+    { medicoId: 1, fechaHora: "2025-12-02T13:30:00.000Z", disponible: true, id: 15 },
+    { medicoId: 1, fechaHora: "2025-12-02T14:00:00.000Z", disponible: true, id: 16 },
+    { medicoId: 1, fechaHora: "2025-12-02T14:30:00.000Z", disponible: true, id: 17 },
+    { medicoId: 1, fechaHora: "2025-12-02T15:00:00.000Z", disponible: true, id: 18 },
+    { medicoId: 1, fechaHora: "2025-12-02T15:30:00.000Z", disponible: true, id: 19 },
+    { medicoId: 1, fechaHora: "2025-12-02T16:00:00.000Z", disponible: true, id: 20 },
+    { medicoId: 1, fechaHora: "2025-12-02T16:30:00.000Z", disponible: true, id: 21 },
+    { medicoId: 1, fechaHora: "2025-12-02T17:00:00.000Z", disponible: true, id: 22 },
+    { medicoId: 1, fechaHora: "2025-12-03T12:00:00.000Z", disponible: true, id: 23 },
+    { medicoId: 1, fechaHora: "2025-12-03T12:30:00.000Z", disponible: true, id: 24 },
+    { medicoId: 1, fechaHora: "2025-12-03T13:00:00.000Z", disponible: true, id: 25 },
+    { medicoId: 1, fechaHora: "2025-12-03T13:30:00.000Z", disponible: true, id: 26 },
+    { medicoId: 1, fechaHora: "2025-12-03T14:00:00.000Z", disponible: true, id: 27 },
+    { medicoId: 1, fechaHora: "2025-12-03T14:30:00.000Z", disponible: true, id: 28 },
+    { medicoId: 1, fechaHora: "2025-12-03T15:00:00.000Z", disponible: true, id: 29 },
+    { medicoId: 1, fechaHora: "2025-12-03T15:30:00.000Z", disponible: true, id: 30 },
+    { medicoId: 1, fechaHora: "2025-12-03T16:00:00.000Z", disponible: true, id: 31 },
+    { medicoId: 1, fechaHora: "2025-12-03T16:30:00.000Z", disponible: true, id: 32 },
+    { medicoId: 1, fechaHora: "2025-12-03T17:00:00.000Z", disponible: true, id: 33 },
+    { medicoId: 1, fechaHora: "2025-12-04T12:00:00.000Z", disponible: true, id: 34 },
+    { medicoId: 1, fechaHora: "2025-12-04T12:30:00.000Z", disponible: true, id: 35 },
+    { medicoId: 1, fechaHora: "2025-12-04T13:00:00.000Z", disponible: true, id: 36 },
+    { medicoId: 1, fechaHora: "2025-12-04T13:30:00.000Z", disponible: true, id: 37 },
+    { medicoId: 1, fechaHora: "2025-12-04T14:00:00.000Z", disponible: true, id: 38 },
+    { medicoId: 1, fechaHora: "2025-12-04T14:30:00.000Z", disponible: true, id: 39 },
+    { medicoId: 1, fechaHora: "2025-12-04T15:00:00.000Z", disponible: true, id: 40 },
+    { medicoId: 1, fechaHora: "2025-12-04T15:30:00.000Z", disponible: true, id: 41 },
+    { medicoId: 1, fechaHora: "2025-12-04T16:00:00.000Z", disponible: true, id: 42 },
+    { medicoId: 1, fechaHora: "2025-12-04T16:30:00.000Z", disponible: true, id: 43 },
+    { medicoId: 1, fechaHora: "2025-12-04T17:00:00.000Z", disponible: true, id: 44 },
+    { medicoId: 1, fechaHora: "2025-12-05T12:00:00.000Z", disponible: true, id: 45 },
+    { medicoId: 1, fechaHora: "2025-12-05T12:30:00.000Z", disponible: true, id: 46 },
+    { medicoId: 1, fechaHora: "2025-12-05T13:00:00.000Z", disponible: true, id: 47 },
+    { medicoId: 1, fechaHora: "2025-12-05T13:30:00.000Z", disponible: true, id: 48 },
+    { medicoId: 1, fechaHora: "2025-12-05T14:00:00.000Z", disponible: true, id: 49 },
+    { medicoId: 1, fechaHora: "2025-12-05T14:30:00.000Z", disponible: true, id: 50 },
+    { medicoId: 1, fechaHora: "2025-12-05T15:00:00.000Z", disponible: true, id: 51 },
+    { medicoId: 1, fechaHora: "2025-12-05T15:30:00.000Z", disponible: true, id: 52 },
+    { medicoId: 1, fechaHora: "2025-12-05T16:00:00.000Z", disponible: true, id: 53 },
+    { medicoId: 1, fechaHora: "2025-12-05T16:30:00.000Z", disponible: true, id: 54 },
+    { medicoId: 1, fechaHora: "2025-12-05T17:00:00.000Z", disponible: true, id: 55 },
+  ],
 };
