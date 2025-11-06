@@ -84,7 +84,8 @@ export const INITIAL_DATA = {
     {
       id: 1,
       documento: "AB123456",
-      paciente: "Gómez, María",
+      nombrePaciente: "María",
+      apellidoPaciente: "Gómez",
       turnoId: 2,
       especialidadId: 1,
       obraSocialId: 1,
@@ -93,7 +94,8 @@ export const INITIAL_DATA = {
     {
       id: 2,
       documento: "CD789012",
-      paciente: "López, Carlos",
+      nombrePaciente: "Carlos",
+      apellidoPaciente: "López",
       turnoId: 4,
       especialidadId: 1,
       obraSocialId: 2,
@@ -102,7 +104,8 @@ export const INITIAL_DATA = {
     {
       id: 3,
       documento: "34567890",
-      paciente: "Martínez, Ana",
+      nombrePaciente: "Ana",
+      apellidoPaciente: "Martínez",
       turnoId: 13,
       especialidadId: 1,
       obraSocialId: 5,
@@ -111,7 +114,8 @@ export const INITIAL_DATA = {
     {
       id: 4,
       documento: "EF345678",
-      paciente: "Rodríguez, Pedro",
+      nombrePaciente: "Pedro",
+      apellidoPaciente: "Rodríguez",
       turnoId: 18,
       especialidadId: 1,
       obraSocialId: 4,
@@ -120,7 +124,8 @@ export const INITIAL_DATA = {
     {
       id: 5,
       documento: "90123456",
-      paciente: "Fernández, Laura",
+      nombrePaciente: "Laura",
+      apellidoPaciente: "Fernández",
       turnoId: 25,
       especialidadId: 1,
       obraSocialId: 3,
@@ -129,7 +134,8 @@ export const INITIAL_DATA = {
     {
       id: 6,
       documento: "GH901234",
-      paciente: "Díaz, Roberto",
+      nombrePaciente: "Roberto",
+      apellidoPaciente: "Díaz",
       turnoId: 32,
       especialidadId: 1,
       obraSocialId: 1,
@@ -138,7 +144,8 @@ export const INITIAL_DATA = {
     {
       id: 7,
       documento: "56789012",
-      paciente: "Pérez, Sofía",
+      nombrePaciente: "Sofía",
+      apellidoPaciente: "Pérez",
       turnoId: 39,
       especialidadId: 1,
       obraSocialId: 2,
@@ -147,7 +154,8 @@ export const INITIAL_DATA = {
     {
       id: 8,
       documento: "IJ567890",
-      paciente: "Silva, Diego",
+      nombrePaciente: "Diego",
+      apellidoPaciente: "Silva",
       turnoId: 46,
       especialidadId: 1,
       obraSocialId: 5,
