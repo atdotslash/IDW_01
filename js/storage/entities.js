@@ -6,7 +6,7 @@ export const specialties = createCrudFunctions(STORAGE_KEYS.specialties);
 export const insuranceCompanies = createCrudFunctions(STORAGE_KEYS.insuranceCompanies);
 export const doctors = createCrudFunctions(STORAGE_KEYS.doctors);
 export const appointments = createCrudFunctions(STORAGE_KEYS.appointments);
-export const reservations = createCrudFunctions(STORAGE_KEYS.reservations);
+export const bookings = createCrudFunctions(STORAGE_KEYS.bookings);
 
 export const createDoctor = (newData) => {
   const allDoctors = doctors.getAll();
@@ -48,6 +48,7 @@ export const createInsuranceCompany = (newData) => {
   }
   return insuranceCompanies.add(newData);
 };
+
 
 export const updateInsuranceCompany = (id, newData) => {
   const currentInsuranceCompany = insuranceCompanies.getById(id);

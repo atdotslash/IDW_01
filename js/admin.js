@@ -5,6 +5,7 @@ import { init as initSpecialties } from "./views/specialties.js";
 import  initUsers  from "./views/users.js";
 import initDoctors  from "./views/doctors.js";
 import initInsuranceCompanies  from "./views/insurance-companies.js";
+import initAdminBookings  from "./views/admin-bookings.js";
 import * as ui from "./core/ui.js";
 import { fullName } from "./shared/formatters.js";
 import { auth } from "./shared/auth.js";
@@ -68,6 +69,10 @@ const adminState = {
 			[
 				"appointments",
 				{ id: "turnos-section", name: "turnos", component: initAppointments },
+			],
+			[
+				"bookings",
+				{ id: "reservas-section", name: "reservas", component: initAdminBookings },
 			],
 		]),
 	},
@@ -214,7 +219,7 @@ function updateNavbar() {
 	const divUserInfo = document.getElementById("user-info");
 	if (divUserInfo && session) {
 		const { firstName, lastName, image } = session;
-		const formattedName = fullName({ nombre: firstName, apellido: lastName });
+		const formattedName = fullName({firstName,lastName}, 'firstName', 'lastName');
 		divUserInfo.innerHTML = `<div><img class="rounded-circle me-1" src="${image}" alt="${formattedName}" width="30" height="30"/>
       <span>${formattedName}</span>
     </div>`;

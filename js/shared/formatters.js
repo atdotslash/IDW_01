@@ -7,7 +7,14 @@ export function formatCurrency(amount) {
     }).format(Number.isNaN(amount) ? 0 : amount);
 }
 
-export function fullName(doctor) {
-  if (!doctor || typeof doctor?.nombre !== 'string' || typeof doctor?.apellido !== 'string') return '';
-  return `${doctor.apellido}, ${doctor.nombre}`
+/**
+ * Genera el nombre completo de una persona en formato "Apellido, Nombre".
+ * @param {object} obj - El objeto que contiene el nombre y el apellido.
+ * @param {string} [firstNameKey='nombre'] - La clave para acceder al nombre en el objeto.
+ * @param {string} [lastNameKey='apellido'] - La clave para acceder al apellido en el objeto.
+ * @returns {string} El nombre completo formateado o una cadena vacía si los datos no son válidos.
+ */
+export function fullName(obj, firstNameKey = 'nombre', lastNameKey = 'apellido') {
+  if (!obj || typeof obj?.[firstNameKey] !== 'string' || typeof obj?.[lastNameKey] !== 'string') return '';
+  return `${obj[lastNameKey]}, ${obj[firstNameKey]}`;
 }

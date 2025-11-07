@@ -12,7 +12,7 @@ export const STORAGE_KEYS = Object.freeze({
   insuranceCompanies: "obrasSociales",
   doctors: "medicos",
   appointments: "turnos",
-  reservations: "reservas",
+  bookings: "reservas",
 });
 
 export const INITIAL_DATA = {
@@ -80,7 +80,88 @@ export const INITIAL_DATA = {
       obraSocialIds: [2, 4, 5],
     },
   ],
-  reservas: [],
+  reservas: [
+    {
+      id: 1,
+      documento: "AB123456",
+      nombrePaciente: "María",
+      apellidoPaciente: "Gómez",
+      turnoId: 2,
+      especialidadId: 1,
+      obraSocialId: 1,
+      valorTotal: 7650
+    },
+    {
+      id: 2,
+      documento: "CD789012",
+      nombrePaciente: "Carlos",
+      apellidoPaciente: "López",
+      turnoId: 4,
+      especialidadId: 1,
+      obraSocialId: 2,
+      valorTotal: 7650
+    },
+    {
+      id: 3,
+      documento: "34567890",
+      nombrePaciente: "Ana",
+      apellidoPaciente: "Martínez",
+      turnoId: 13,
+      especialidadId: 1,
+      obraSocialId: 5,
+      valorTotal: 8500
+    },
+    {
+      id: 4,
+      documento: "EF345678",
+      nombrePaciente: "Pedro",
+      apellidoPaciente: "Rodríguez",
+      turnoId: 18,
+      especialidadId: 1,
+      obraSocialId: 4,
+      valorTotal: 7650
+    },
+    {
+      id: 5,
+      documento: "90123456",
+      nombrePaciente: "Laura",
+      apellidoPaciente: "Fernández",
+      turnoId: 25,
+      especialidadId: 1,
+      obraSocialId: 3,
+      valorTotal: 7650
+    },
+    {
+      id: 6,
+      documento: "GH901234",
+      nombrePaciente: "Roberto",
+      apellidoPaciente: "Díaz",
+      turnoId: 32,
+      especialidadId: 1,
+      obraSocialId: 1,
+      valorTotal: 7650
+    },
+    {
+      id: 7,
+      documento: "56789012",
+      nombrePaciente: "Sofía",
+      apellidoPaciente: "Pérez",
+      turnoId: 39,
+      especialidadId: 1,
+      obraSocialId: 2,
+      valorTotal: 7650
+    },
+    {
+      id: 8,
+      documento: "IJ567890",
+      nombrePaciente: "Diego",
+      apellidoPaciente: "Silva",
+      turnoId: 46,
+      especialidadId: 1,
+      obraSocialId: 5,
+      valorTotal: 8500
+    }
+  ],
   turnos: [
     { medicoId: 1, fechaHora: "2025-12-01T12:00:00.000Z", disponible: true, id: 1 },
     { medicoId: 1, fechaHora: "2025-12-01T12:30:00.000Z", disponible: false, id: 2 },

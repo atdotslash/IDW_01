@@ -38,7 +38,7 @@ const calculateDashboardStats = async () => {
     totalDoctors: storageService.doctors.getAll().length,
     totalSpecialties: storageService.specialties.getAll().length,
     totalInsuranceCompanies: storageService.insuranceCompanies.getAll().length,
-    totalReservations: storageService.reservations.getAll().length,
+    totalBookings: storageService.bookings.getAll().length,
     totalAppointments: storageService.appointments.getAll().length,
     totalUsers,
   };
@@ -120,7 +120,7 @@ async function generateDashboardItems() {
     {
       title: 'Reservas',
       iconClass: 'fa-clipboard-list',
-      value: stats.totalReservations,
+      value: stats.totalBookings,
       href: '#reservas',
       selectorId: SELECTORS.RESERVATIONS,
     },

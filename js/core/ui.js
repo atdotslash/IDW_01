@@ -17,8 +17,8 @@ const CONTENT_AREA_SELECTOR = "#content";
 export function renderTable(headers, dataRowsHTML) {
 	const tableHTML = `
       <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead>
+        <table class="table table-hover  align-middle">
+          <thead class="table-active">
             <tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr>
           </thead>
           <tbody>${dataRowsHTML}</tbody>
