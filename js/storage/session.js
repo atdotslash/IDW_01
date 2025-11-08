@@ -1,4 +1,4 @@
-import { SESSION_KEY, SESSION_APPOINTMENT_DATA_KEY } from "./constants.js";
+import { SESSION_KEY, SESSION_APPOINTMENT_DATA_KEY, SESSION_APPOINTMENT_SELECTION_KEY } from "./constants.js";
 import { getData, removeData, saveData } from "./utils.js";
 
 // --- Funciones de Sesión ---
@@ -14,8 +14,6 @@ export const session = {
 
   // Guardar doctor seleccionado
   saveAppointmentData: (doctorId) => {
-    console.log(doctorId);
-
     saveData({
       key: SESSION_APPOINTMENT_DATA_KEY,
       data: { doctorId },
@@ -36,6 +34,36 @@ export const session = {
   clearAppointmentData: () =>
     removeData({
       key: SESSION_APPOINTMENT_DATA_KEY,
+      storageType: "sessionStorage",
+    }),
+
+  /**
+   * @param {object} selection - Objeto con { doctorId, appointmentId }.
+   */
+  setAppointmentSelection: (selection) => {
+    saveData({
+      key: SESSION_APPOINTMENT_SELECTION_KEY,
+      data: selection, // Guardamos el objeto completo { doctorId, appointmentId }
+      storageType: "sessionStorage",
+    });
+  },
+
+  /**
+   * @returns {object | null} - Objeto con { doctorId, appointmentId } o null.
+   */
+  getAppointmentSelection: () => {
+    return getData({
+      key: SESSION_APPOINTMENT_SELECTION_KEY,
+      storageType: "sessionStorage",
+    });
+  },
+
+  /**
+   * Limpia la selección de turno después de que la reserva se ha completado.
+   */
+  clearAppointmentSelection: () =>
+    removeData({
+      key: SESSION_APPOINTMENT_SELECTION_KEY,
       storageType: "sessionStorage",
     }),
 };

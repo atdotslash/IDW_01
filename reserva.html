@@ -51,11 +51,31 @@
        <h4 class="py-2">Reserva tu Cita</h4>
       </div>
       <div class="card-body">
+
+       <div id="detalleCita" class="alert alert-info" role="alert">
+        Cargando detalles de la cita...
+       </div>
+
+       <hr>
+       <h5 class="card-title mb-3">Datos del Paciente</h5>
+
        <form id="formReserva">
+
         <div class="mb-3">
-         <label for="nombre" class="form-label">Nombre completo</label>
+         <label for="documento" class="form-label">Documento</label>
+         <input type="text" class="form-control" id="documento" required placeholder="Nro. de Documento">
+        </div>
+
+        <div class="mb-3">
+         <label for="nombre" class="form-label">Nombre</label>
          <input type="text" class="form-control" id="nombre" required placeholder="Escribe tu nombre">
         </div>
+
+        <div class="mb-3">
+         <label for="apellido" class="form-label">Apellido</label>
+         <input type="text" class="form-control" id="apellido" required placeholder="Escribe tu apellido">
+        </div>
+
         <div class="mb-3">
          <label for="email" class="form-label">Correo electrónico</label>
          <input type="email" class="form-control" id="email" required placeholder="ejemplo@correo.com">
@@ -64,28 +84,18 @@
          <label for="telefono" class="form-label">Teléfono</label>
          <input type="tel" class="form-control" id="telefono" required placeholder="+54 351 123 4567">
         </div>
+
         <div class="mb-3">
-         <label for="fecha" class="form-label">Fecha de la cita</label>
-         <input type="date" class="form-control" id="fecha" required>
-        </div>
-        <div class="mb-3">
-         <label for="hora" class="form-label">Hora de la cita</label>
-         <input type="time" class="form-control" id="hora" required>
-        </div>
-        <div class="mb-3">
-         <label for="especialidad" class="form-label">Especialidad</label>
-         <select class="form-select" id="especialidad" required>
-          <option selected disabled>Selecciona una opción</option>
-          <option>Clínica Médica</option>
-          <option>Pediatría</option>
-          <option>Odontología</option>
-          <option>Neurocirugía</option>
-          <option>Psicología</option>
-          <option>Reumatología</option>
-          <option>Neonatología</option>
+         <label for="obraSocial" class="form-label">Obra Social / Prepaga</label>
+         <select class="form-select" id="obraSocial" required>
+          <option value="" disabled selected>Selecciona tu cobertura</option>
          </select>
+         <div id="detalleValor" class="mt-2 text-primary fw-bold">
+          Valor Consulta: $...
+         </div>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Reservar Cita</button>
+
+        <button type="submit" class="btn btn-primary w-100">Confirmar Reserva</button>
        </form>
       </div>
      </div>
@@ -136,15 +146,13 @@
   </div>
  </footer>
  <template id="theme-toggle-button-template">
-      <button class="btn theme-toggle btn-sm bg-transparent w-100 border-0 text-muted d-flex
+  <button class="btn theme-toggle btn-sm bg-transparent w-100 border-0 text-muted d-flex
   align-items-center
-  text-decoration-none justify-content-start gap-2"
-              type="button"
-              title="cambiar tema claro/oscuro">
-          <i></i>
-          <span></span>
-      </button>
-  </template>
+  text-decoration-none justify-content-start gap-2" type="button" title="cambiar tema claro/oscuro">
+   <i></i>
+   <span></span>
+  </button>
+ </template>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
   integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
  <script type="module" src="./js/theme.js"></script>
