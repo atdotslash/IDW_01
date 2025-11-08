@@ -44,8 +44,8 @@
  </header>
  <main>
   <div class="container py-5">
-   <div class="row justify-content-center">
-    <div class="col-md-6">
+   <div class="row">
+    <div class="offset-md-2 col-md-8 offset-lg-3 col-lg-6">
      <div class="card shadow">
       <div class="card-header bg-primary text-white text-center">
        <h4 class="py-2">Reserva tu Cita</h4>
@@ -59,40 +59,62 @@
        <hr>
        <h5 class="card-title mb-3">Datos del Paciente</h5>
 
-       <form id="formReserva">
+       <form id="formReserva" novalidate>
 
         <div class="mb-3">
          <label for="documento" class="form-label">Documento</label>
-         <input type="text" class="form-control" id="documento" required placeholder="Nro. de Documento">
+         <input type="text" class="form-control"
+         pattern="[0-9]{7,8}" id="documento" required placeholder="Nro. de Documento">
+         <div class="invalid-feedback">
+          Por favor, ingresa un número de documento válido (7 u 8 dígitos).
+         </div>
         </div>
 
         <div class="mb-3">
          <label for="nombre" class="form-label">Nombre</label>
          <input type="text" class="form-control" id="nombre" required placeholder="Escribe tu nombre">
+             <div class="invalid-feedback">
+
+          Por favor, ingresa tu nombre.
+         </div>
+
         </div>
 
         <div class="mb-3">
          <label for="apellido" class="form-label">Apellido</label>
          <input type="text" class="form-control" id="apellido" required placeholder="Escribe tu apellido">
+         <div class="invalid-feedback">
+          Por favor, ingresa tu apellido.
+         </div>
         </div>
 
         <div class="mb-3">
          <label for="email" class="form-label">Correo electrónico</label>
-         <input type="email" class="form-control" id="email" required placeholder="ejemplo@correo.com">
+         <input type="email" inputmode="email" class="form-control" id="email" required placeholder="ejemplo@correo.com">
+         <div class="invalid-feedback">
+          Por favor, ingresa un correo electrónico válido.
+         </div>
         </div>
         <div class="mb-3">
          <label for="telefono" class="form-label">Teléfono</label>
-         <input type="tel" class="form-control" id="telefono" required placeholder="+54 351 123 4567">
-        </div>
+         <input type="tel" inputmode="tel" class="form-control" id="telefono" required placeholder="+54 351 123 4567">
+         <div class="invalid-feedback">
+          Por favor, ingresa un número de teléfono válido.
+         </div>
+
+         </div>
 
         <div class="mb-3">
          <label for="obraSocial" class="form-label">Obra Social / Prepaga</label>
          <select class="form-select" id="obraSocial" required>
           <option value="" disabled selected>Selecciona tu cobertura</option>
          </select>
+
          <div id="detalleValor" class="mt-2 text-primary fw-bold">
           Valor Consulta: $...
          </div>
+
+
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Confirmar Reserva</button>
@@ -145,6 +167,19 @@
    &copy; 2025 - Todos los derechos reservados
   </div>
  </footer>
+   <template id="toast-container-template">
+        <div class="position-fixed top-0 end-0 p-3 toast-container z-3"></div>
+    </template>
+
+    <template id="toast-notification-template">
+        <div class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast aria-label="Close"></button>
+            </div>
+        </div>
+    </template>
  <template id="theme-toggle-button-template">
   <button class="btn theme-toggle btn-sm bg-transparent w-100 border-0 text-muted d-flex
   align-items-center
