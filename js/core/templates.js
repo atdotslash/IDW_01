@@ -231,6 +231,8 @@ export function createBookingRow(booking) {
       <td>${booking.documento}</td>
       <td>${fullName(booking, 'nombrePaciente', 'apellidoPaciente')}</td>
       <td>${insuranceCompany.nombre}</td>
+      <td>${booking.telefono}</td>
+      <td>${booking.email}</td>
       <td>${dayjs(appointment.fechaHora).format('DD/MM/YYYY HH:mm [hs]')}</td>
       <td>${fullName(doctor)}</td>
       <td>${specialty.nombre}</td>

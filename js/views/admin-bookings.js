@@ -15,6 +15,8 @@ const config = {
 		"Documento",
 		"Paciente",
 		"Obra Social",
+		"Teléfono",
+		"Email",
 		"Fecha Turno",
 		"Médico",
 		"Especialidad",
