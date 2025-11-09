@@ -18,3 +18,17 @@ export const CURRENCY_CONFIG = {
   LOCALE: 'es-AR',
   CURRENCY: 'ARS'
 }
+
+export const DATETIME_CONFIG = {
+  LOCALE: 'es-AR',
+  TIMEZONE: 'America/Argentina/Buenos_Aires',
+  OPTIONS: {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: 'h23',
+  }
+};
