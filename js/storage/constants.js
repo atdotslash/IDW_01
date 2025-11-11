@@ -1,6 +1,7 @@
 export const DB_KEY = "idwData";
 export const SESSION_KEY = "idwSession";
 export const SESSION_APPOINTMENT_DATA_KEY = "appointmentData";
+export const SESSION_APPOINTMENT_SELECTION_KEY = "appointmentSelection";
 
 export const FAKE_AUTH_CREDENTIALS = {
   username: "admin",
@@ -28,10 +29,10 @@ export const INITIAL_DATA = {
       id: 1,
       nombre: "OSDE",
       descripcion: "Organización de Servicios Directos Empresarios",
-      porcentaje: 10,
+      porcentaje: 30,
     },
-    { id: 2, nombre: "Swiss Medical", descripcion: "Swiss Medical Group", porcentaje: 10 },
-    { id: 3, nombre: "Galeno", descripcion: "Galeno Argentina", porcentaje: 10 },
+    { id: 2, nombre: "Swiss Medical", descripcion: "Swiss Medical Group", porcentaje: 30 },
+    { id: 3, nombre: "Galeno", descripcion: "Galeno Argentina", porcentaje: 25 },
     {
       id: 4,
       nombre: "IOMA",
@@ -42,7 +43,7 @@ export const INITIAL_DATA = {
       id: 5,
       nombre: "Particular",
       descripcion: "Sin obra social - Pago particular",
-      porcentaje: 10,
+      porcentaje: 0,
     },
   ],
   medicos: [
@@ -89,7 +90,7 @@ export const INITIAL_DATA = {
       turnoId: 2,
       especialidadId: 1,
       obraSocialId: 1,
-      valorTotal: 7650
+      valorTotal: 7650,
     },
     {
       id: 2,
@@ -99,7 +100,7 @@ export const INITIAL_DATA = {
       turnoId: 4,
       especialidadId: 1,
       obraSocialId: 2,
-      valorTotal: 7650
+      valorTotal: 7650,
     },
     {
       id: 3,
@@ -109,7 +110,7 @@ export const INITIAL_DATA = {
       turnoId: 13,
       especialidadId: 1,
       obraSocialId: 5,
-      valorTotal: 8500
+      valorTotal: 8500,
     },
     {
       id: 4,
@@ -119,7 +120,7 @@ export const INITIAL_DATA = {
       turnoId: 18,
       especialidadId: 1,
       obraSocialId: 4,
-      valorTotal: 7650
+      valorTotal: 7650,
     },
     {
       id: 5,
@@ -129,7 +130,7 @@ export const INITIAL_DATA = {
       turnoId: 25,
       especialidadId: 1,
       obraSocialId: 3,
-      valorTotal: 7650
+      valorTotal: 7650,
     },
     {
       id: 6,
@@ -139,7 +140,7 @@ export const INITIAL_DATA = {
       turnoId: 32,
       especialidadId: 1,
       obraSocialId: 1,
-      valorTotal: 7650
+      valorTotal: 7650,
     },
     {
       id: 7,
@@ -149,7 +150,7 @@ export const INITIAL_DATA = {
       turnoId: 39,
       especialidadId: 1,
       obraSocialId: 2,
-      valorTotal: 7650
+      valorTotal: 7650,
     },
     {
       id: 8,
@@ -159,8 +160,8 @@ export const INITIAL_DATA = {
       turnoId: 46,
       especialidadId: 1,
       obraSocialId: 5,
-      valorTotal: 8500
-    }
+      valorTotal: 8500,
+    },
   ],
   turnos: [
     { medicoId: 1, fechaHora: "2025-12-01T12:00:00.000Z", disponible: true, id: 1 },

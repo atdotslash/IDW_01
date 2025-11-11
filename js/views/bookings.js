@@ -9,6 +9,18 @@ const SELECTORS = {
   APPOINTMENTS_CARD: "appointments-card",
 };
 
+/**
+ * Guarda el ID del médico y el ID del turno en sessionStorage
+ * y redirige a la página de reserva.
+ * @param {number} doctorId - ID del médico.
+ * @param {number} appointmentId - ID del turno seleccionado.
+ */
+function selectAppointment(doctorId, appointmentId) {
+  storageService.session.setAppointmentSelection({ doctorId, appointmentId });
+  window.location.href = "reserva.html";
+}
+window.selectAppointment = selectAppointment;
+
 function formatDateTime(dateString) {
   const date = new Date(dateString);
 
@@ -29,30 +41,33 @@ export function loadAppointments(doctorId) {
   const container = document.getElementById(SELECTORS.APPOINTMENTS_TABLE_CONTAINER);
 
   if (!doctorId) {
-    container.innerHTML = '<p class="text-muted">Seleccione un doctor.</p>';
+    container.innerHTML = '<p class="text-muted">Seleccione un profesional en Catálogo.</p>';
     card.classList.add("d-none");
     return;
   }
 
-  container.innerHTML = "<p>Cargando turnos...</p>";
+  container.innerHTML = '<img src="/assets/loader.svg" class="loader" alt="loading">';
 
-  const appointments = storageService.appointments
-    .getByDoctorId(Number(doctorId))
+  const allAppointments = storageService.appointments.getByDoctorId(Number(doctorId));
+  const availableAppointments = allAppointments
+    .filter((a) => a.disponible)
     .sort((a, b) => a.fechaHora.localeCompare(b.fechaHora));
 
-  if (appointments.length === 0) {
+  if (availableAppointments.length === 0) {
     container.innerHTML = '<p class="text-muted">Sin turnos disponibles.</p>';
     return;
   }
 
-  const headers = ["Fecha-Hora", "Estado"];
-  const rows = appointments.map(
-    (a) =>
-      `<tr>
+  const headers = ["Fecha y Hora"];
+
+  const rows = availableAppointments.map((a) => {
+    return `<tr 
+        class="clickable-row" 
+        data-id-turno="${a.id}" 
+        onclick="selectAppointment(${doctorId}, ${a.id})">
       <td>${formatDateTime(a.fechaHora)}</td>
-      <td>${a.disponible ? "Disponible ✅" : "Res. ❌"}</td>
-    </tr>`
-  );
+    </tr>`;
+  });
 
   const table = ui.renderTable(headers, rows.join(""));
   container.innerHTML = table;
