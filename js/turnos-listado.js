@@ -1,20 +1,43 @@
+import { createAndRenderAlertWithLink } from "./components/notifications.js";
+import { fullName } from "./shared/formatters.js";
 import storageService from "./storage/index.js";
 import { loadAppointments } from "./views/bookings.js";
 
-storageService.initialize();
+const UI = {
+	APPOINTMENTS_CONTAINER: "#turnosDisponibles",
+};
 
-const doctorId = storageService.session.getAppointmentData();
-const medicos = storageService.doctors.getAll();
+const MESSAGES = {
+	NO_DOCTOR_SELECTED:
+		"Debe seleccionar primero un médico en el catalogo para ver sus turnos disponibles.",
+};
 
-const contenedor = document.getElementById("turnosDisponibles");
+function renderPage() {
+	const appointmentsContainerElement = document.querySelector(
+		UI.APPOINTMENTS_CONTAINER,
+	);
+	if (!appointmentsContainerElement) return;
+	const doctorId = storageService.session.getAppointmentData();
 
-if (!doctorId) {
-  contenedor.innerHTML = `<p class="text-danger">No se encontró el médico. Volvé al catálogo.</p>`;
-} else {
-  const medico = medicos.find((el) => el.id === Number(doctorId));
-  contenedor.innerHTML = `
-    <h4>El profesional ${medico.nombre} ${medico.apellido}</h4>
-    <h5>Tiene los siguientes turnos disponibles</h5>
+	if (!doctorId) {
+		appointmentsContainerElement.innerHTML = "";
+		appointmentsContainerElement.appendChild(
+			createAndRenderAlertWithLink({
+				render: false,
+				message: MESSAGES.NO_DOCTOR_SELECTED,
+			}),
+		);
+		return;
+	}
+	const medico = storageService.doctors.getById(doctorId);
+	appointmentsContainerElement.innerHTML = `
+    <h4>Profesional: <strong>${fullName(medico)}</strong></h4>
   `;
-  loadAppointments(doctorId);
+	loadAppointments(doctorId);
 }
+
+function main() {
+	storageService.initialize();
+	renderPage();
+}
+main();

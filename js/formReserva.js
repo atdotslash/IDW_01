@@ -1,40 +1,32 @@
-import storageService from "./storage/index.js";
-storageService.initialize();
+import notifications, {
+  createAndRenderAlertWithLink,
+} from './components/notifications.js';
+import {
+  formatCurrency,
+  formatDateTime,
+  fullName,
+} from './shared/formatters.js';
+import storageService from './storage/index.js';
+import { validateForm } from './core/ui.js';
 
-const formReserva = document.getElementById("formReserva"),
-  detalleCita = document.getElementById("detalleCita"),
-  inputDocumento = document.getElementById("documento"),
-  inputNombre = document.getElementById("nombre"),
-  inputApellido = document.getElementById("apellido"),
-  inputEmail = document.getElementById("email"),
-  inputTelefono = document.getElementById("telefono"),
-  selectObraSocial = document.getElementById("obraSocial"),
-  detalleValor = document.getElementById("detalleValor");
+const ui = {
+  formReserva: document.getElementById('formReserva'),
+  detalleCita: document.getElementById('detalleCita'),
+  inputDocumento: document.getElementById('documento'),
+  inputNombre: document.getElementById('nombre'),
+  inputApellido: document.getElementById('apellido'),
+  inputEmail: document.getElementById('email'),
+  inputTelefono: document.getElementById('telefono'),
+  selectObraSocial: document.getElementById('obraSocial'),
+  detalleValor: document.getElementById('detalleValor'),
+  card: document.querySelector('.card'),
+};
 
-// Variables para la selección de turno (se llenarán al inicio)
-let doctorSeleccionado = null;
-let turnoSeleccionado = null;
-let turnoId = null;
-let doctorId = null;
+const state = {
+  doctor: null,
+  turno: null,
+};
 
-/**
- * @param {string} dateString - Cadena ISO de fecha y hora.
- * @returns {string} Fecha y hora legible en AR.
- */
-
-function formatDateTime(dateString) {
-  const date = new Date(dateString);
-  return date
-    .toLocaleString("es-AR", {
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-    .replace(",", "");
-}
 
 /**
  * Calcula el valor final aplicando el descuento de la obra social.
@@ -51,26 +43,16 @@ function calcularValorFinal(valorBase, porcentajeDescuento) {
  * Actualiza el texto de valor de consulta en el formulario.
  */
 function updateValorDisplay() {
-  if (!doctorSeleccionado) return;
+  if (!state.doctor) return;
 
-  const selectedOsId = Number(selectObraSocial.value);
-  const obraSocial = storageService.insuranceCompanies.getById(selectedOsId);
-
-  const valorBase = doctorSeleccionado.valorConsulta;
-  const porcentaje = obraSocial ? obraSocial.porcentaje : 0;
-  const valorFinal = calcularValorFinal(valorBase, porcentaje);
+  const { valorFinal, valorBase, porcentaje } = getFinalCost(
+    state.doctor,
+    ui.selectObraSocial.value,
+  );
 
   // Formatear a moneda (ej: AR$)
-  const valorBaseFormatted = valorBase.toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-  });
-  const valorFinalFormatted = valorFinal.toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-  });
+  const valorBaseFormatted = formatCurrency(valorBase);
+  const valorFinalFormatted = formatCurrency(valorFinal);
 
   let html;
   if (porcentaje > 0) {
@@ -80,7 +62,7 @@ function updateValorDisplay() {
     html = `Valor Consulta: ${valorFinalFormatted} (Precio Particular)`;
   }
 
-  detalleValor.innerHTML = html;
+  ui.detalleValor.innerHTML = html;
 }
 
 /**
@@ -92,137 +74,190 @@ function loadInsuranceCompanies() {
 
   // Filtrar solo las obras sociales que atiende el médico
   const availableInsuranceCompanies = allInsuranceCompanies.filter((os) =>
-    doctorSeleccionado.obraSocialIds.includes(os.id)
+    state.doctor.obraSocialIds.includes(os.id),
   );
 
-  let optionsHtml = "";
+  let optionsHtml = '';
   let particularId = null;
 
   availableInsuranceCompanies.forEach((os) => {
-    if (os.nombre === "Particular") {
+    if (os.nombre === 'Particular') {
       particularId = os.id;
     }
     optionsHtml += `<option value="${os.id}">${os.nombre}</option>`;
   });
 
-  selectObraSocial.insertAdjacentHTML("beforeend", optionsHtml);
-
-  // Asignar el listener para actualizar el valor cuando cambia la selección
-  selectObraSocial.addEventListener("change", updateValorDisplay);
+  ui.selectObraSocial.insertAdjacentHTML('beforeend', optionsHtml);
 
   // Establecer 'Particular' como opción seleccionada (si el médico la atiende)
   if (particularId !== null) {
-    selectObraSocial.value = particularId;
+    ui.selectObraSocial.value = particularId;
   } else if (availableInsuranceCompanies.length > 0) {
     // Fallback: si no atiende 'Particular', seleccionar la primera disponible
-    selectObraSocial.value = availableInsuranceCompanies[0].id;
+    ui.selectObraSocial.value = availableInsuranceCompanies[0].id;
   }
 
   updateValorDisplay();
 }
 
-// Carga datos, muestra detalles y si no hay redirige
-
 function loadReservationDetails() {
-  const selection = storageService.session.getAppointmentSelection();
+  const doctorSeleccionado = state.doctor;
+  const turnoSeleccionado = state.turno;
 
-  if (!selection || !selection.doctorId || !selection.appointmentId) {
-    detalleCita.innerHTML = `<p class="text-danger mb-0">⚠️ Error: No se encontró la cita seleccionada. Volvé al <a href="catalogo.html">catálogo</a>.</p>`;
-    // Opcional: redirigir después de un tiempo
-    // setTimeout(() => window.location.href = "catalogo.html", 3500);
-    return;
-  }
-
-  doctorId = selection.doctorId;
-  turnoId = selection.appointmentId;
-
-  doctorSeleccionado = storageService.doctors.getById(Number(doctorId));
-  turnoSeleccionado = storageService.appointments.getById(Number(turnoId));
-
-  if (!doctorSeleccionado || !turnoSeleccionado) {
-    detalleCita.innerHTML = `<p class="text-danger mb-0">⚠️ Error: No se pudo cargar la información completa del médico o turno.</p>`;
-    return;
-  }
   // Obtener nombre de la especialidad (asumiendo que doctor.especialidadId existe)
-  const especialidad = storageService.specialties.getById(doctorSeleccionado.especialidadId);
-  const especialidadNombre = especialidad ? especialidad.nombre : "Especialidad Desconocida";
+  const especialidad = storageService.specialties.getById(
+    doctorSeleccionado.especialidadId,
+  );
+  const especialidadNombre = especialidad
+    ? especialidad.nombre
+    : 'Especialidad Desconocida';
 
   // Mostrar el resumen de la cita
-  detalleCita.innerHTML = `
-    <h5 class="alert-heading text-primary">Turno Seleccionado</h5>
+  ui.detalleCita.innerHTML = `
+    <h5 class="fw-bold text-primary">Turno Seleccionado</h5>
     <p class="mb-1"><strong>Especialidad:</strong> ${especialidadNombre}</p>
-    <p class="mb-1"><strong>Profesional:</strong> Dr/a. ${doctorSeleccionado.nombre} ${doctorSeleccionado.apellido}</p>
-    <p class="mb-0"><strong>Fecha y Hora:</strong> ${formatDateTime(turnoSeleccionado.fechaHora)}</p>
+    <p class="mb-1"><strong>Profesional:</strong> Dr/a. ${
+      doctorSeleccionado.nombre
+    } ${doctorSeleccionado.apellido}</p>
+    <p class="mb-0"><strong>Fecha y Hora:</strong> ${formatDateTime(
+      turnoSeleccionado.fechaHora,
+    )}</p>
   `;
-
-  loadInsuranceCompanies();
 }
 
-function efectuarReserva(e) {
-  e.preventDefault();
-
-  if (!doctorId || !turnoId) {
-    alert(" - - Error al cargar los datos del turno desde sessionStorage. Problemas en el navegador del cliente. - -");
-    console.error(
-      " - - Error al cargar los datos del turno desde sessionStorage. Problemas en el navegador del cliente. - -"
-    );
-    return;
-  }
-
-  // 1. Recorte de datos ingresados y calculo de valor con descuento
-  const nombrePaciente = inputNombre.value.trim();
-  const apellidoPaciente = inputApellido.value.trim();
-  const documento = inputDocumento.value.trim();
-  const email = inputEmail.value.trim();
-  const telefono = inputTelefono.value.trim();
-  const obraSocialId = Number(selectObraSocial.value);
-
-  const obraSocial = storageService.insuranceCompanies.getById(obraSocialId);
-  const valorBase = doctorSeleccionado.valorConsulta;
+function getFinalCost(doctor, osId) {
+  const obraSocial = storageService.insuranceCompanies.getById(osId);
+  const valorBase = doctor.valorConsulta;
   const porcentaje = obraSocial ? obraSocial.porcentaje : 0;
-  const valorTotal = calcularValorFinal(valorBase, porcentaje);
-
-  // 2. Construcción del objeto de reserva
-  const nuevaReserva = {
-    documento: documento,
-    nombrePaciente: nombrePaciente,
-    apellidoPaciente: apellidoPaciente,
-    email: email,
-    telefono: telefono,
-    turnoId: Number(turnoId),
-    especialidadId: doctorSeleccionado.especialidadId,
-
-    obraSocialId: obraSocialId,
-    valorTotal: valorTotal,
+  const valorFinal = calcularValorFinal(valorBase, porcentaje);
+  return {
+    valorBase,
+    porcentaje,
+    valorFinal,
   };
+}
+function getPatientDataFromForm() {
+  return {
+    nombrePaciente: ui.inputNombre.value.trim(),
+    apellidoPaciente: ui.inputApellido.value.trim(),
+    documento: ui.inputDocumento.value.trim(),
+    email: ui.inputEmail.value.trim(),
+    telefono: ui.inputTelefono.value.trim(),
+    obraSocialId: Number(ui.selectObraSocial.value),
+  };
+}
 
+function createBookingPayload(patientData) {
+  const { valorFinal } = getFinalCost(state.doctor, patientData.obraSocialId);
+
+  //  Combina los datos del paciente, los datos del turno/doctor (del estado) y el costo.
+  return {
+    ...structuredClone(patientData),
+    turnoId: Number(state.turno.id),
+    especialidadId: state.doctor.especialidadId,
+    valorTotal: valorFinal,
+  };
+}
+
+function handleSuccessfulBooking(booking) {
+  const obraSocial = storageService.insuranceCompanies.getById(booking.obraSocialId);
+  const successMessage = `<h4 class="alert-heading">✅ ¡Turno Reservado con Éxito!</h4>
+  <hr />
+  <ul><li>Paciente: ${fullName(
+    booking,
+    'nombrePaciente',
+    'apellidoPaciente',
+  )}</li>
+ <li>Documento: ${booking.documento}</li>
+ <li>Email: ${booking.email}</li>
+ <li>Teléfono: ${booking.telefono}</li>
+ <li>Obra Social: ${obraSocial.nombre ?? 'No especificada'}</li>
+ <li>Cita: ${formatDateTime(state.turno.fechaHora)} con el Dr/a. ${fullName(
+    state.doctor,
+  )}</li>
+ </ul>`;
+
+  // 2. Limpia el formulario.
+  ui.formReserva.reset();
+
+  // 3. Muestra un alert de notificacion.
+
+  createAndRenderAlertWithLink({
+    message: successMessage,
+    alertType: 'success',
+    containerElement: ui.card,
+  });
+
+  // 4. Redirige al usuario a la pagina de catalogo después de un  momento.
+  setTimeout(() => {
+    window.location.href = 'catalogo.html';
+  }, 10_000);
+}
+
+function handleReservationSubmit(e) {
+  e.preventDefault();
+  if (!validateForm(ui.formReserva)) return;
   try {
+    // 1. Recorte de datos ingresados y calculo de valor con descuento
+    const patientInputData = getPatientDataFromForm();
+
+    // 2. Construcción del objeto de reserva
+    const newBookingData = createBookingPayload(patientInputData);
+
     // 3. Guardar la nueva reserva en localStorage
-    const reservaGuardada = storageService.bookings.add(nuevaReserva);
+    storageService.bookings.add(newBookingData);
 
     // 4. Actualizar el estado del turno (Marcarlo como no disponible)
-    storageService.appointments.markAsReserved(Number(turnoId));
+    storageService.appointments.markAsReserved(Number(state.turno.id));
 
     // 5. Limpiar la sesión (ya no se necesita la selección temporal)
     storageService.session.clearAppointmentSelection();
 
     // 6. Mensaje de éxito y limpieza
-    alert(
-      `✅ ¡Turno Reservado con Éxito!\n\n` +
-        `Paciente: ${nombrePaciente} ${apellidoPaciente}\n` +
-        `Documento: ${documento}\n` +
-        `Cita: ${formatDateTime(turnoSeleccionado.fechaHora)} con el Dr/a. ${doctorSeleccionado.apellido}`
-    );
-
-    formReserva.reset();
-
-    // 7. Opcional: Redirigir a una página de confirmación o volver al inicio
-    window.location.href = "catalogo.html";
+    handleSuccessfulBooking(newBookingData);
   } catch (error) {
-    alert("❌ Error al guardar la reserva: " + error.message);
+    console.log('🚀 ~ efectuarReserva ~ error:', error);
+    notifications.error('❌ Error al guardar la reserva: ' + error.message);
   }
 }
 
+function handleNoSelectionError(message) {
+  if (ui.card) {
+    createAndRenderAlertWithLink({
+      containerElement: ui.card,
+      message,
+    });
+  }
+  // Opcional: redirigir después de un tiempo
+  // setTimeout(() => window.location.href = "catalogo.html", 3500);
+}
+
+function initFormReservaPage() {
+  storageService.initialize();
+  const { doctorId = null, appointmentId = null } =
+    storageService.session.getAppointmentSelection() ?? {};
+  // verifica que haya datos en la sesion
+  if (!doctorId || !appointmentId) {
+    handleNoSelectionError('Debe seleccionar un médico y un turno');
+    return;
+  }
+
+  state.doctor = storageService.doctors.getById(doctorId);
+  state.turno = storageService.appointments.getById(appointmentId);
+  // verifica que sean IDs validos
+  if (!state.doctor || !state.turno) {
+    handleNoSelectionError(
+      'No se pudo cargar la información completa del médico o turno',
+    );
+    return;
+  }
+
+  loadReservationDetails();
+  loadInsuranceCompanies();
+  // Asignar el listener para actualizar el valor cuando cambia la selección
+  ui.selectObraSocial.addEventListener('change', updateValorDisplay);
+  ui.formReserva.addEventListener('submit', handleReservationSubmit);
+}
+
 // --- Ejecución ---
-document.addEventListener("DOMContentLoaded", loadReservationDetails);
-formReserva.addEventListener("submit", efectuarReserva);
+document.addEventListener('DOMContentLoaded', initFormReservaPage);
