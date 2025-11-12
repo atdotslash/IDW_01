@@ -72,6 +72,10 @@ const handleLogin = async (event) => {
   try {
     const {user,success} = await apiService.login({username, password})
     if (success){
+      const isAdministrator = await apiService.validateAdminToken(user.accessToken)
+      if (!isAdministrator){
+        throw new Error(MESSAGES.INVALID_ROLE)
+      }
       storageService.session.set(user)
       auth.redirectToAdmin()
     }

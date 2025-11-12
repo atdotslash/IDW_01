@@ -1,6 +1,7 @@
 import { AuthError, createHttpClient } from './shared/http-client.js';
 
 const BASE_URL = 'https://dummyjson.com';
+export const ALLOWED_ROLES = ["admin", "moderator"];
 
 const api = createHttpClient(BASE_URL);
 
@@ -29,16 +30,18 @@ export const apiService = {
     return api.get(endpoint);
   },
 
+
   /**
-   * Valida un accessToken de autenticación.
+   * Valida un accessToken de autenticación y verifica si el usuario tiene un rol permitido.
    * @param {string} accessToken - El accessToken a validar.
-   * @returns {Promise<boolean>} Una promesa que resuelve a `true` si el accessToken es válido, `false` de lo contrario.
+   * @param {string[]} [allowed_roles=ALLOWED_ROLES] - Roles permitidos para la validación.
+   * @returns {Promise<boolean>} Una promesa que resuelve a `true` si el accessToken es válido y el usuario tiene un rol permitido, `false` de lo contrario.
    */
-  validateToken: async (accessToken) => {
+  validateAdminToken: async (accessToken, allowedRoles = ALLOWED_ROLES) => {
     if (!accessToken) return false;
     try {
-      await api.get('/auth/me', accessToken);
-      return true;
+      const user = await api.get('/auth/me', accessToken);
+      return allowedRoles.includes(user?.role)
     } catch (error) {
       if (error instanceof AuthError) {
         return false;
