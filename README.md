@@ -63,13 +63,16 @@ Puedes ver la aplicación en funcionamiento en el siguiente enlace:
 
 [Demo en Vivo](https://atdotslash.github.io/IDW_01/)
 
-### 🔐 Usuario y Contraseña por Defecto
+### 🔐 Usuario y Contraseña
  Para ingresar en el panel de administración utilizar estas credenciales
 
-*   **Usuario:** `admin`
-*   **Contraseña:** `1234`
+*   **Usuario:** `emilys`
+*   **Contraseña:** `emilyspass`
 
-**Nota:** Estas credenciales son solo para fines de desarrollo y no deben usarse en un entorno de producción.
+**Nota:** Estas credenciales son extraídas de la API `dummyjson.com` del endpoint
+[/users](https://dummyjson.com/users) y el acceso es solo para usuarios con role `admin` o `moderator`.
+
+
 
 ## 📸 Capturas de Pantalla
 Próximamente capturas de pantalla y diseño de la aplicación para mostrar su apariencia y funcionalidad.
