@@ -6,7 +6,8 @@ export const MESSAGES = {
     ENTITY_DELETE_SUCCESS : (entityName) =>`${entityName} fue eliminada con éxito.`,
     CONFIRM_DELETE : (entityName) =>`¿Está seguro de que desea eliminar esta ${entityName}? Esta acción no se puede deshacer.`,
     ENTITY_LOAD_ERROR : (entityName) =>`Error al cargar ${entityName}. Intente nuevamente.`,
-    INVALID_CREDENTIALS: "Credenciales inválidas. Usuario y/o Password Inválidos."
+    INVALID_CREDENTIALS: "Credenciales inválidas. Usuario y/o Password Inválidos.",
+    INVALID_ROLE: "Usted no tiene los permisos necesarios para acceder a esta sección. Contacte al administrador."
 };
 
 export const PAGES = {

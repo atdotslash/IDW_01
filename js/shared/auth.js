@@ -23,7 +23,7 @@ export const auth = {
 	gatekeep: async (redirectUrl = PAGES.LOGIN) => {
 			const session = storageService.session.get();
 			const token = session?.accessToken;
-			const isUserAuthenticated  = await apiService.validateToken(token);
+			const isUserAuthenticated  = await apiService.validateAdminToken(token);
 			if (!isUserAuthenticated) {
         storageService.session.clear()
 				auth.redirectTo(redirectUrl);
